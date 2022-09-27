@@ -1,2 +1,7 @@
 # Project exclude paths
-/node_modules/
+/vendor
+/node_modules
+.env
+.idea/
+/composer.lock
+.yarn
