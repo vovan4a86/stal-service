@@ -1,0 +1,17 @@
+import './tables';
+import './utility';
+import './lightValidation';
+import './lazyLoading';
+import './popups';
+import './sliders';
+import './tabs';
+import './cookie';
+import './overlay';
+import './region';
+import './confirmDialog';
+import './map';
+import './catalogHeader';
+import './orderEdit';
+import './upload';
+import './cartHidden';
+import './cartFields';
