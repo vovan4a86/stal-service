@@ -39,6 +39,8 @@ Route::group(['prefix' => 'ajax', 'as' => 'ajax.'], function () {
         ->name('show-popup-cities');
     Route::get('search', [AjaxController::class, 'showCitiesPopup'])
         ->name('search');
+    Route::post('set-view/{view}', 'AjaxController@postSetView')
+        ->name('set-view');
 });
 Route::group(['middleware' => ['redirects', 'regions']], function() {
 	Route::get('/', 'WelcomeController@index')

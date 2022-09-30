@@ -61,12 +61,12 @@
                     {!! Form::groupCheckbox('on_main_list', 1, $catalog->on_main_list, 'Показывать в каталоге продукции') !!}
                 @endif
 
-				
+
 			</div>
 
 			<div class="tab-pane" id="tab_2">
-                {!! Form::groupRichtext('announce', $catalog->announce, 'Краткое описание', ['rows' => 3]) !!}
-                {!! Form::groupRichtext('text', $catalog->text, 'Текст', ['rows' => 3]) !!}
+                {!! Form::groupRichtext('announce', $catalog->announce, 'Вводный текст', ['rows' => 3]) !!}
+                {!! Form::groupRichtext('text', $catalog->text, 'Основной текст', ['rows' => 3]) !!}
 			</div>
 		</div>
 

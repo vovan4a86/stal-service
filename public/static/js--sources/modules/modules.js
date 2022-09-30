@@ -15,3 +15,5 @@ import './orderEdit';
 import './upload';
 import './cartHidden';
 import './cartFields';
+import './selects';
+import './catalogFilter';

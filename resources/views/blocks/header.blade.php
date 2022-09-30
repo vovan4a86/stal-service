@@ -21,17 +21,17 @@
                         <div class="dialog-city__actions">
                             <button class="dialog-city__action dialog-city__action--confirm"
                                     type="button" data-city-confirm="confirm"
-                                    aria-label="Подтвердить город Екатеринбург">
-                                    data-id="{{ ($current_city)? $current_city->id: 0 }}"
-                                    data-cur_url="{{ Request::path() }}"
-                                    data-confirm-region
+{{--                                    aria-label="Подтвердить город Екатеринбург">--}}
+{{--                                    data-id="{{ ($current_city)? $current_city->id: 0 }}"--}}
+{{--                                    data-cur_url="{{ Request::path() }}"--}}
+{{--                                    data-confirm-region--}}
                                 <span>Да</span>
                             </button>
                             <a class="dialog-city__action dialog-city__action--change"
                                     href="{{ route('ajax.show-popup-cities') }}"
                                     title="Изменить регион"
-{{--                                    type="button" data-src="{{ route('ajax.show-popup-cities') }}" --}}
-{{--                                    data-fancybox data-type="ajax" data-city-change="change" --}}
+{{--                                    type="button" data-src="{{ route('ajax.show-popup-cities') }}"--}}
+{{--                                    data-fancybox data-type="ajax" data-city-change="change"--}}
 {{--                                    aria-label="Изменить текущий город"--}}
                                    >
                                 <span>Нет, другой</span>

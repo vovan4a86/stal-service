@@ -4,7 +4,11 @@ use Fanky\Admin\Models\Catalog;
 use Fanky\Admin\Models\MaterialImage;
 use Fanky\Admin\Models\Page;
 use Fanky\Admin\Models\Product;
+use Fanky\Admin\Settings;
+use Illuminate\Database\Eloquent\Collection;
+//use Illuminate\Http\Request;
 use SEOMeta;
+use Session;
 use View;
 use Request;
 
@@ -57,15 +61,39 @@ class CatalogController extends Controller {
         $category = $this->add_region_seo($category);
         $children = $category->public_children;
         $category->setSeo();
-        $products = $category->getProducts();
 
-        return view('catalog.category', [
+        $per_page = Request::get('pages');
+        $per_page = is_numeric($per_page) ? $per_page : \Settings::get('product_per_page');
+        $data['per_page'] = $per_page;
+
+        $parentIds = Catalog::where('parent_id', '=', '0')->pluck('id')->all();
+
+        if(in_array($category->id, $parentIds)) {
+            $ids = $category->getRecurseChildrenIds();
+            $items = Product::public()->whereIn('catalog_id', $ids)->paginate($per_page);
+            $is_subcategory = false;
+        } else {
+            $items =  $category->products()->paginate($per_page);
+            $is_subcategory = true;
+        }
+
+        $data = [
             'bread'    => $bread,
             'category' => $category,
             'children' => $children,
             'h1'       => $category->getH1(),
-            'products' => $products,
-        ]);
+            'items' => $items,
+            'is_subcategory' => $is_subcategory,
+        ];
+
+        $view = Session::get('catalog_view', 'list') == 'list' ?
+            'catalog.views.list' :
+            'catalog.views.grid';
+
+        $data['items'] = view($view, ['items' => $items, 'category' => $category, 'per_page' => $per_page]);
+
+        return view('catalog.category', $data);
+
     }
 
     public function product(Product $product) {

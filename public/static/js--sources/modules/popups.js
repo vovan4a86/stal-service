@@ -13,7 +13,8 @@ export const closeButtonPopup = `
 Fancybox.bind('[data-fancybox]', {
   closeButton: 'outside',
   mainClass: 'popup--ajax',
-  hideClass: 'fancybox-zoomOut'
+  hideClass: 'fancybox-zoomOut',
+  infinite: false
 });
 
 Fancybox.bind('[data-popup]', {

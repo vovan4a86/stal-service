@@ -338,6 +338,13 @@ class Catalog extends Model {
         return $this->products()
             ->orderBy('order')
             ->with(['catalog', 'image', 'params_on_list'])
-            ->paginate(Settings::get('product_per_page'));
+            ->get();
+    }
+
+    public function getRecurseProducts() {
+        return $this->products()
+            ->orderBy('order')
+            ->with(['catalog', 'image', 'params_on_list'])
+            ->get();
     }
 }

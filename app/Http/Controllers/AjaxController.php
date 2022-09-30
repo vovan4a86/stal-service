@@ -6,10 +6,11 @@ use Fanky\Admin\Models\Feedback;
 use Fanky\Admin\Models\Order as Order;
 use Fanky\Admin\Models\Page;
 use Fanky\Admin\Models\Product;
+use Fanky\Admin\Models\Setting;
 use Illuminate\Http\Request;
 use Mail;
 use Mailer;
-use Settings;
+//use Settings;
 use Cart;
 use SiteHelper;
 use Validator;
@@ -452,5 +453,25 @@ class AjaxController extends Controller {
 //            'data' => $data,
 //        ]);
 
+    }
+
+    public function changeProductsPerPage(Request $request) {
+        $count = $request->only('num');
+
+        $setting = Setting::find(9);
+        if($setting) {
+            $setting->value = $count['num'];
+            $setting->save();
+            return ['result' => true];
+        } else {
+            return ['result' => false];
+        }
+    }
+
+    public function postSetView($view) {
+        $view = $view == 'list' ? 'list': 'grid';
+        session(['catalog_view' => $view]);
+
+        return ['success' => true];
     }
 }

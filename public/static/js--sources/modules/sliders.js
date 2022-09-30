@@ -13,6 +13,19 @@ export const mainSlider = ({ slider, pagination }) => {
   });
 };
 
+export const productSlider = ({ slider }) => {
+  new Swiper(slider, {
+    modules: [EffectFade, Lazy, Navigation],
+    fadeEffect: { crossFade: true },
+    effect: 'fade',
+    lazy: true,
+    navigation: {
+      nextEl: '[data-product-next]',
+      prevEl: '[data-product-prev]'
+    }
+  });
+};
+
 export const tabSlider = ({ slider, navigationNext, navigationPrev }) => {
   new Swiper(slider, {
     modules: [Lazy, Navigation],
@@ -83,6 +96,8 @@ mainSlider({
   slider: '[data-main-slider]',
   pagination: '.hero__pagination'
 });
+
+productSlider({ slider: '[data-product-slider]' });
 
 tabSlider({
   slider: '[data-discount-slider]',

@@ -349,3 +349,16 @@ function search(frm, e) {
         }
     });
 }
+
+$('.catalog-list__pages').on('change', function (e) {
+    this.form.submit();
+});
+
+function setView(el, view) {
+    let url = '/ajax/set-view/' + view;
+    sendAjax(url, {view: view}, function (json) {
+        if (json.success == true) {
+            $('#setView').submit();
+        }
+    })
+}
