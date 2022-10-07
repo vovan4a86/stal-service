@@ -8,7 +8,7 @@ use Text;
 class AdminProductIconsController extends AdminController {
 
 	public function getIndex() {
-		$items = ProductIcon::orderBy('name', 'desc')->get();
+		$items = ProductIcon::orderBy('order', 'asc')->get();
 
 		return view('admin::product_icons.main', ['items' => $items]);
 	}
@@ -20,23 +20,22 @@ class AdminProductIconsController extends AdminController {
 
 	public function postSave() {
 		$id = Request::input('id');
-		$data = Request::only(['name']);
+		$data = Request::only(['name', 'order']);
 		$image = Request::file('image');
+        if(!array_get($data, 'order')) $data['order'] = 0;
 
-		// валидация данных
-		$validator = Validator::make(
-			$data,
-			[
+
+        // валидация данных
+		$validator = Validator::make($data, [
 				'name' => 'required',
-			]
-		);
+			]);
 		if ($validator->fails()) {
 			return ['errors' => $validator->messages()];
 		}
 
 		// Загружаем изображение
 		if ($image) {
-			$file_name = ProductIcon::uploadImage($image);
+			$file_name = ProductIcon::uploadIcon($image);
 			$data['image'] = $file_name;
 		}
 

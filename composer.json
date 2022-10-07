@@ -29,7 +29,7 @@
 		"phpunit/phpunit": "~8.5",
 		"symfony/thanks": "^1.0",
 		"symfony/css-selector": "3.1.*",
-		"symfony/dom-crawler": "3.1.*"
+		"symfony/dom-crawler": "^5.4"
 	},
 	"autoload": {
         "files": [

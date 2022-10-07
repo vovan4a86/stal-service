@@ -146,40 +146,18 @@
                             </div>
                         </div>
                     </div>
-                    <div class="features-company">
-                        <div class="features-company__grid">
-                            <div class="features-company__item">
-                                <img class="features-company__icon lazy" src="/" data-src="/static/images/common/ico_store.svg" alt="alt" width="50" height="42">
-                                <div class="features-company__label">Складское
-                                    <span>наличие</span>
-                                </div>
-                            </div>
-                            <div class="features-company__item">
-                                <img class="features-company__icon lazy" src="/" data-src="/static/images/common/ico_discount.svg" alt="alt" width="50" height="50">
-                                <div class="features-company__label">Выгодные
-                                    <span>цены</span>
-                                </div>
-                            </div>
-                            <div class="features-company__item">
-                                <img class="features-company__icon lazy" src="/" data-src="/static/images/common/ico_legal.svg" alt="alt" width="38" height="48">
-                                <div class="features-company__label">Продукция
-                                    <span>ГОСТ, ТУ</span>
-                                </div>
-                            </div>
-                            <div class="features-company__item">
-                                <img class="features-company__icon lazy" src="/" data-src="/static/images/common/ico_size.svg" alt="alt" width="50" height="33">
-                                <div class="features-company__label">Резка
-                                    <span>в размер</span>
-                                </div>
-                            </div>
-                            <div class="features-company__item">
-                                <img class="features-company__icon lazy" src="/" data-src="/static/images/common/ico_delivery.svg" alt="alt" width="50" height="31">
-                                <div class="features-company__label">Самовывоз
-                                    <span>/ Доставка</span>
-                                </div>
+                    @if(count($features))
+                        <div class="features-company">
+                            <div class="features-company__grid">
+                                @foreach($features as $feat)
+                                    <div class="features-company__item">
+                                        <img class="features-company__icon lazy" src="/" data-src="{{ \Fanky\Admin\Models\ProductIcon::UPLOAD_URL . $feat->image }}" alt="alt" width="50" height="42">
+                                        <div class="features-company__label">{!! $feat->name !!}</div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
-                    </div>
+                    @endif
                     <section class="section">
                         <div class="container">
                             <div class="section__text text-content">

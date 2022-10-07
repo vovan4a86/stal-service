@@ -4,6 +4,7 @@ use Fanky\Admin\Models\Catalog;
 use Fanky\Admin\Models\MaterialImage;
 use Fanky\Admin\Models\Page;
 use Fanky\Admin\Models\Product;
+use Fanky\Admin\Models\ProductIcon;
 use Fanky\Admin\Settings;
 use Illuminate\Database\Eloquent\Collection;
 //use Illuminate\Http\Request;
@@ -104,6 +105,7 @@ class CatalogController extends Controller {
             ->where('group', '!=', '')
             ->get()
             ->groupBy('group');
+        $features = ProductIcon::orderBy('order', 'asc')->get();
 
         return view('catalog.product', [
             'product'    => $product,
@@ -111,6 +113,7 @@ class CatalogController extends Controller {
             'name'       => $product->name,
             'specParams' => $product->params_on_spec,
             'params'     => $params,
+            'features' => $features,
         ]);
     }
 

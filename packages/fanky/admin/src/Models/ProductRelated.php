@@ -2,6 +2,7 @@
 
 use App\Traits\HasImage;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Thumb;
 
 /**
@@ -22,18 +23,26 @@ use Thumb;
  * @method static \Illuminate\Database\Eloquent\Builder|\Fanky\Admin\Models\ProductImage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\Fanky\Admin\Models\ProductImage query()
  */
-class ProductIcon extends Model {
+class ProductRelated extends Model {
 
-	use HasImage;
-	protected $table = 'product_icons';
+	protected $table = 'product_related';
 
-	protected $fillable = ['name', 'image', 'order'];
+	protected $guarded = ['id'];
 
 	public $timestamps = false;
 
-	const UPLOAD_URL = '/uploads/product_icons/';
+	public function product_info() {
+		return $this->belongsTo(Product::class, 'related_id');
+	}
 
-	public static $thumbs = [
-		1 => '42x42|fit', //admin product
-	];
+	public function params() {
+		return $this->hasMany(ProductParam::class, 'product_id')->orderBy('order');
+	}
+
+	public function params_on_card() {
+		return $this->params()
+			->where('on_card', '=', 1);
+	}
+
+
 }

@@ -123,6 +123,11 @@ class Product extends Model {
         return $this->hasMany(ProductParam::class);
     }
 
+    //related
+    public function related() {
+        return $this->hasMany(ProductRelated::class, 'product_id');
+    }
+
     public function params_on_list() {
         return $this->params()
             ->where('on_list', 1);

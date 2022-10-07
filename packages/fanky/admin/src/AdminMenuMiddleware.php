@@ -20,6 +20,8 @@ class AdminMenuMiddleware {
 				->active('/admin/pages/*');
 			$menu->add('Каталог', ['route' => 'admin.catalog', 'icon' => 'fa-list'])
 				->active('/admin/catalog/*');
+            $menu->add('Иконки преимуществ', ['route' => 'admin.product-icons', 'icon' => 'fa-list'])
+                ->active('/admin/product-icons/*');
 
 			$menu->add('Акции', ['route' => 'admin.actions', 'icon' => 'fa-list'])
 				->active('/admin/actions/*');

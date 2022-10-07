@@ -86,6 +86,20 @@ Route::group(['namespace' => 'Fanky\Admin\Controllers', 'prefix' => 'admin', 'as
 		Route::get('get-catalogs/{id?}', $controller . 'getGetCatalogs')
 			->name('.get_catalogs');
 
+        Route::post('add-related/{id}', [
+            'as'   => '.add_related',
+            'uses' => $controller . 'postAddRelated'
+        ]);
+
+        Route::post('del-related/{id}', [
+            'as'   => '.del_related',
+            'uses' => $controller . 'postDelRelated'
+        ]);
+
+        Route::post('save-related/{id}', [
+            'as'   => '.save_related',
+            'uses' => $controller . 'postSaveRelated'
+        ]);
 
         Route::post('add-param/{id}', [
             'as'   => '.add_param',
@@ -104,6 +118,23 @@ Route::group(['namespace' => 'Fanky\Admin\Controllers', 'prefix' => 'admin', 'as
             'uses' => $controller . 'postSaveParam'
         ]);
 	});
+
+    Route::group(['as' => '.product-icons', 'prefix' => 'product-icons'], function () {
+        $controller = 'AdminProductIconsController@';
+        Route::get('/', $controller . 'getIndex');
+
+        Route::get('edit/{id?}', $controller . 'getEdit')
+            ->name('.edit');
+
+        Route::post('save', $controller . 'postSave')
+            ->name('.save');
+
+        Route::post('delete/{id}', $controller . 'postDelete')
+            ->name('.delete');
+
+        Route::post('delete-image/{id}', $controller . 'postDeleteImage')
+            ->name('.delete-image');
+    });
 
     Route::group(['as' => '.actions', 'prefix' => 'actions'], function () {
         $controller  = 'AdminActionController@';

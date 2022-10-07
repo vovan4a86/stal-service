@@ -219,7 +219,45 @@ $(document).ready(function () {
     });
 });
 
+function addRelated(elem, e) {
+    e.preventDefault();
+    var name = $('select[name=rel-name] option:selected');
+    var data = {
+        related_id: name.val(),
+        related_name: name.text(),
+    }
+    var url = $(elem).attr('href');
 
+    sendAjax(url, data, function(json){
+        if(typeof json.row != 'undefined'){
+            $('#related_list tbody').append(json.row);
+        }
+    });
+}
+
+function delRelated(elem, e) {
+    e.preventDefault();
+    if(!confirm('Точно удалить этот товар?')) return;
+    var url = $(elem).attr('href');
+    var row = $(elem).closest('tr');
+
+    sendAjax(url, {}, function(json){
+        if(typeof json.success != 'undefined'){
+            $(row).fadeOut(300, function(){ $(this).remove(); });
+        }
+    });
+}
+
+function saveRelated(form, e) {
+    e.preventDefault();
+    var url = $(form).attr('action');
+    var data = $(form).serialize();
+    var id = $(form).data('id');
+    sendAjax(url, data, function (html) {
+        popupClose();
+        $('tr#related'+id).replaceWith(html);
+    }, 'html');
+}
 
 function addParam(elem, e) {
     e.preventDefault();
@@ -252,6 +290,7 @@ function addParam(elem, e) {
         }
     });
 }
+
 function delParam(elem, e) {
     e.preventDefault();
     if(!confirm('Точно удалить этот параметр?')) return;
@@ -264,7 +303,6 @@ function delParam(elem, e) {
         }
     });
 }
-
 
 function editParam(link, e) {
     e.preventDefault();

@@ -23,6 +23,7 @@
             <li><a href="#tab_params" data-toggle="tab">Характеристики</a></li>
             <li><a href="#tab_2" data-toggle="tab">Текст</a></li>
             <li><a href="#tab_4" data-toggle="tab">Изображения</a></li>
+            <li><a href="#tab_5" data-toggle="tab">Похожие товары</a></li>
             <li class="pull-right">
                 <a href="{{ route('admin.catalog.products', [$product->catalog_id]) }}" onclick="return catalogContent(this)">К списку товаров</a>
             </li>
@@ -60,7 +61,7 @@
             </div>
             @include('admin::catalog.tabs.tab_params')
             <div class="tab-pane" id="tab_2">
-                {!! Form::groupRichtext('product__points', $product->product__points, 'Преимущества на странице товара', ['rows' => 3]) !!}
+{{--                {!! Form::groupRichtext('product__points', $product->product__points, 'Преимущества на странице товара', ['rows' => 3]) !!}--}}
                 {!! Form::groupRichtext('announce_text', $product->announce_text, 'Краткое описание', ['rows' => 3]) !!}
                 {!! Form::groupRichtext('text', $product->text, 'Текст', ['rows' => 3]) !!}
                 {!! Form::groupRichtext('seo_text', $product->seo_text, 'SEO Текст', ['rows' => 3]) !!}
@@ -84,6 +85,10 @@
                 @else
                     <p class="text-yellow">Изображения можно будет загрузить после сохранения товара!</p>
                 @endif
+            </div>
+
+            <div class="tab-pane" id="tab_5">
+                @include('admin::catalog.tabs.tab_related')
             </div>
         </div>
 

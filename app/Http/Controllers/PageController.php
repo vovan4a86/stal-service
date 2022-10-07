@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App;
+use Fanky\Admin\Models\Catalog;
 use Fanky\Admin\Models\Page;
 use SEOMeta;
 
@@ -26,6 +27,7 @@ class PageController extends Controller {
         $page->setSeo();
 
         if($page->alias = 'sitemap') {
+            $catalog = Catalog::public()->whereParentId(0)->get();
             $sitemap = Page::find(1)->getPublicChildren();
         }
 
@@ -36,6 +38,7 @@ class PageController extends Controller {
 			'bread'       => $bread,
 			'children'    => $children,
             'sitemap'     => $sitemap ?? null,
+            'catalog' => $catalog ?? null,
 		]);
 	}
 

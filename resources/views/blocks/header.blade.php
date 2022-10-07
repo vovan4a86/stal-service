@@ -102,7 +102,7 @@
                                                 </li>
                                             @endforeach
                                                 <li class="catalog-header__item">
-                                                    <a class="catalog-header__product" href="{{ route('catalog.index') }}"
+                                                    <a class="catalog-header__product" href="{{ $topItem->url }}"
                                                        title="Весь каталог" data-link-catalog="">Весь каталог</a>
                                                 </li>
                                         </ul>

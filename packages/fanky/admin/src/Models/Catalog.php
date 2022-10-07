@@ -101,6 +101,11 @@ class Catalog extends Model {
 		return $this->hasMany('Fanky\Admin\Models\Product', 'catalog_id');
 	}
 
+    public function params() {
+        return $this->hasMany('Fanky\Admin\Models\CatalogParam', 'catalog_id')
+            ->join('params', 'catalog_params.param_id', '=', 'params.id');
+    }
+
 	public function public_products() {
 		return $this->hasMany('Fanky\Admin\Models\Product', 'catalog_id')
 			->public()->orderBy('order');

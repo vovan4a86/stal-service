@@ -3,6 +3,7 @@
 use Exception;
 use Fanky\Admin\Models\ProductIcon;
 use Fanky\Admin\Models\ProductParam;
+use Fanky\Admin\Models\ProductRelated;
 use Request;
 use Settings;
 use Validator;
@@ -54,6 +55,8 @@ class AdminCatalogController extends AdminController {
         $catalogs = Catalog::orderBy('order')
             ->where('id', '!=', $catalog->id)
             ->get();
+
+//        dd($catalog->params()->order('order', 'asc')->get()); //параметры раздела
 
         return view('admin::catalog.catalog_edit', [
             'catalog'  => $catalog,
@@ -144,10 +147,12 @@ class AdminCatalogController extends AdminController {
             ]);
         }
         $catalogs = Catalog::getCatalogList();
+        $product_list = Product::where('id', '<>', $product->id)->public()->pluck('name', 'id')->all();
 
         $data = [
             'product'  => $product,
             'catalogs' => $catalogs,
+            'product_list' => $product_list
         ];
         return view('admin::catalog.product_edit', $data);
     }
@@ -284,6 +289,32 @@ class AdminCatalogController extends AdminController {
         return $result;
     }
 
+    public function postAddRelated($product_id) {
+        $product = Product::findOrFail($product_id);
+        $data = Request::all();
+        $valid = Validator::make($data, [
+            'related_id' => 'required',
+        ]);
+
+        if ($valid->fails()) {
+            return ['errors' => $valid->messages()];
+        } else {
+            $data = array_map('trim', $data);
+            $data['product_id'] = $product->id;
+            $data['order'] = 0;
+            $related = ProductRelated::create($data);
+            $row = view('admin::catalog.related_row', ['related' => $related])->render();
+
+            return ['row' => $row];
+        }
+    }
+
+    public function postDelRelated($related_id) {
+        $related = ProductRelated::findOrFail($related_id);
+        $related->delete();
+
+        return ['success' => true];
+    }
 
     public function postAddParam($product_id) {
         $product = Product::findOrFail($product_id);
