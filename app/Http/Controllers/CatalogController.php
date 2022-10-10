@@ -101,11 +101,16 @@ class CatalogController extends Controller {
         $bread = $product->getBread();
         $product = $this->add_region_seo($product);
         $product->setSeo();
-        $params = $product->params()
-            ->where('group', '!=', '')
-            ->get()
-            ->groupBy('group');
+//        $params = $product->params()
+//            ->where('group', '!=', '')
+//            ->get()
+//            ->groupBy('group');
         $features = ProductIcon::orderBy('order', 'asc')->get();
+        $related = $product->related()->get();
+
+        $catalog = Catalog::find($product->catalog_id)->first();
+        $params = $catalog->params()->get();
+//        dd($params);
 
         return view('catalog.product', [
             'product'    => $product,
@@ -114,6 +119,7 @@ class CatalogController extends Controller {
             'specParams' => $product->params_on_spec,
             'params'     => $params,
             'features' => $features,
+            'related' => $related,
         ]);
     }
 

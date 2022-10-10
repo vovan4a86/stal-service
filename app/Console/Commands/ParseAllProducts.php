@@ -46,29 +46,155 @@ class ParseAllProducts extends Command {
      * @return mixed
      */
     public function handle() {
-//        $this->parseProfileTubes( 'https://www.spk.ru/catalog/metalloprokat/trubniy-prokat/truba-profilnaya/');
-
-//		foreach ($this->getOtherTubesList() as $categoryUrl) {
-//            $this->parseOtherTubes($categoryUrl);
-//		}
-
-//        $this->parseShvellers( 'https://www.spk.ru/catalog/metalloprokat/fasonniy-prokat/shveller/');
-
-//        $this->parseUgolok( 'https://www.spk.ru/catalog/metalloprokat/fasonniy-prokat/ugolok/');
-//        $this->parseArmatura( 'https://www.spk.ru/catalog/metalloprokat/sortovoy-prokat/armatura/');
-        $this->parseKatanka( 'https://www.spk.ru/catalog/metalloprokat/sortovoy-prokat/katanka/');
+		foreach ($this->categoryList() as $categoryName => $categoryUrl) {
+            $this->parseCategory($categoryName, $categoryUrl);
+		}
+//        $this->parseProfnastil('Профнастил','https://www.spk.ru/catalog/krovlya/profnastil/');
 
         $this->info('The command was successful!');
-        /**
-        $products = Engine::whereNotNull('parse_url')
-            ->whereNotIn('parse_url', [''])
-//			->whereId(12)
-//			->whereNull('parse_date')
-            ->get();
-        foreach ($products as $product) {
-            $this->parseProduct($product);
+    }
+
+    private $tubeCategories = [
+        'Профильная труба',
+        'Труба электросварная',
+        'Труба водогазопроводная'
+    ];
+
+    public function categoryList() {
+        return [
+            'Профильная труба' => 'https://www.spk.ru/catalog/metalloprokat/trubniy-prokat/truba-profilnaya/',
+//            'Труба электросварная' => 'https://www.spk.ru/catalog/metalloprokat/trubniy-prokat/truba-e-s/',
+//            'Труба водогазопроводная' => 'https://www.spk.ru/catalog/metalloprokat/trubniy-prokat/truba-vgp/',
+//            'Швеллер' => 'https://www.spk.ru/catalog/metalloprokat/fasonniy-prokat/shveller/',
+//            'Уголок' => 'https://www.spk.ru/catalog/metalloprokat/fasonniy-prokat/ugolok/',
+//            'Арматура' => 'https://www.spk.ru/catalog/metalloprokat/fasonniy-prokat/ugolok/',
+//            'Круг' => 'https://www.spk.ru/catalog/metalloprokat/sortovoy-prokat/krug/',
+//            'Балка' => 'https://www.spk.ru/catalog/metalloprokat/fasonniy-prokat/balka/',
+//            'Катанка' => 'https://www.spk.ru/catalog/metalloprokat/sortovoy-prokat/katanka/',
+//            'Шестигранник' => 'https://www.spk.ru/catalog/metalloprokat/sortovoy-prokat/shestigrannik/',
+//            'Квадрат' => 'https://www.spk.ru/catalog/metalloprokat/sortovoy-prokat/kvadrat/',
+//            'Проволока' => 'https://www.spk.ru/catalog/metalloprokat/sortovoy-prokat/provoloka/',
+//            'Лист Х/К' => 'https://www.spk.ru/catalog/metalloprokat/listovoy-prokat/list-kh-k/',
+//            'Лист Г/К' => 'https://www.spk.ru/catalog/metalloprokat/listovoy-prokat/list-g-k/',
+//            'Сетка арматурная' => 'https://www.spk.ru/catalog/metalloprokat/izdeliya-iz-armatury/setka-armaturnaya/',
+        ];
+    }
+
+    public function parseCategory($categoryName, $categoryUrl) {
+        $this->info('parse url: ' . $categoryUrl);
+        $res = $this->client->get($categoryUrl);
+        $html = $res->getBody()->getContents();
+        $crawler = new Crawler($html);
+//        $categoryNameRaw = strip_tags(trim(($crawler->filter('h1')->first()->text())));
+//        $categoryName = trim(str_ireplace('в Екатеринбурге', '', $categoryNameRaw));
+
+        $catalog = $this->getCatalogByName($categoryName);
+
+        $crawler->filter('.product-card__wrap_list-alt-wrap .product-card')->each(function (Crawler $node, $i) use ($catalog, $categoryName) {
+            if($i == 5) {
+                exit();
+            }
+
+            $name = trim($node->filter('a.product-card__title-link')->first()->text());
+
+            //если товар не в наличии, то следующий
+            if($node->filter('.product__stock-in')->count()) {
+                $in_stock = 1;
+
+                $url = $this->baseUrl . trim($node->filter('a.product-card__title-link')->first()->attr('href'));
+
+                $inner_product = $this->client->get($url);
+                $inner_html = $inner_product->getBody()->getContents();
+                $inner_crawler = new Crawler($inner_html);
+                $price = preg_replace("/[^,.0-9]/", '', $inner_crawler->filter('.product-multiple__price-item')->first()->text());
+                $find_slash_offset = stripos($inner_crawler->filter('.product-multiple__price-item')->first()->text(), '/');
+                $measure = trim(substr($inner_crawler->filter('.product-multiple__price-item')->first()->text(), $find_slash_offset + 1));
+
+                if(in_array($categoryName, $this->tubeCategories)) {
+                    $length_elem = $inner_crawler->filter('.product-multiple__item-wrap .form__select')->first();
+                    if($length_elem->filter('.form__select-element option')->count() !== 0) {
+                        $length = preg_replace("/[^,.0-9]/", '', $length_elem->filter('.form__select-element option')->first()->text());
+                    } else {
+                        $length = null;
+                    }
+                }
+
+                $char_keys = [];
+                $char_values = [];
+                $inner_crawler->filter('.product__char')->each(function (Crawler $node, $i) use (&$char_values, &$char_keys){
+                    $char_keys[$i] = trim($node->filter('.product__char-key')->first()->text());
+                    $char_values[$i] = trim($node->filter('.product__char-val')->first()->text());
+                });
+
+                $subname = $categoryName . ' ' . $char_values[0];
+                $sub_catalog = $this->getSubCatalogByName($subname, $catalog->id);
+
+                $data = [];
+                foreach ($char_keys as $i => $key) {
+                    $data[Text::translit($key)] = $char_values[$i];
+                    $param = Param::whereName($key)->first();
+                    if(!$param) {
+                        $param = Param::create([
+                            'name' => $key,
+                            'alias' => Text::translit($key)
+                        ]);
+                        CatalogParam::create([
+                            'catalog_id' => $catalog->id,
+                            'param_id' => $param->id,
+                            'order' => CatalogParam::where('catalog_id', '=', $catalog->id)->max('order') + 1,
+                        ]);
+                    } else {
+                        $used = CatalogParam::where('catalog_id', '=', $catalog->id)->pluck('param_id')->all();
+                        if(!in_array($param->id, $used)) {
+                            CatalogParam::create([
+                                'catalog_id' => $catalog->id,
+                                'param_id' => $param->id,
+                                'order' => CatalogParam::where('catalog_id', '=', $catalog->id)->max('order') + 1,
+                            ]);
+                        }
+                    }
+                }
+
+                $product = Product::whereParseUrl($url)->first();
+                if (!$product) {
+                    Product::create(array_merge([
+                        'name'        => $name,
+                        'catalog_id' =>  $sub_catalog->id,
+                        'title'       => $name,
+                        'alias'       => Text::translit($name),
+                        'parse_url'   => $url,
+                        'published'   => 1,
+                        'length' => $length ?? null,
+                        'order'       => $catalog->products()->max('order') + 1,
+                        'price'       => $price,
+                        'in_stock'    => $in_stock,
+                        'measure' => $measure,
+                    ], $data));
+                }
+            }
+        });
+
+        if ($crawler->filter('a.pager__right')->count()) {
+            $nextUrl = $this->baseUrl . $crawler->filter('a.pager__right')->first()->attr('href');
+            $this->parseCategory($categoryName, $nextUrl);
         }
-        */
+    }
+
+    public function parseProfnastil($categoryName, $categoryUrl) {
+        $this->info('parse url: ' . $categoryUrl);
+        $res = $this->client->get($categoryUrl);
+        $html = $res->getBody()->getContents();
+        $crawler = new Crawler($html);
+
+//        $catalog = $this->getCatalogByName($categoryName);
+
+        $crawler->filter('.metal-tile__content-block')->each(function (Crawler $subcrawler) use ($categoryName) {
+//            $subname = $subcrawler->filter('.metal-tile-item__description a')->first()->text();
+//            $profSubCatalog = $this->getSubCatalogByName($subname, $catalog->id);
+            $subcaturl = $this->baseUrl . trim($subcrawler->filter('.metal-tile-item__description a')->first()->attr('href'));
+
+            $this->parseCategory($categoryName, $subcaturl);
+        });
     }
 
     public function parseProduct(Product $product) {
@@ -127,8 +253,6 @@ class ParseAllProducts extends Command {
             }
         }
     }
-
-
 
     //Труба профильная
     public function parseProfileTubes($categoryUrl) {
@@ -203,6 +327,7 @@ class ParseAllProducts extends Command {
             'https://www.spk.ru/catalog/metalloprokat/trubniy-prokat/truba-vgp/'
         ];
     }
+
     public function parseOtherTubes($categoryUrl) {
         $this->info('parse url: ' . $categoryUrl);
         $res = $this->client->get($categoryUrl);
@@ -467,7 +592,7 @@ class ParseAllProducts extends Command {
         }
     }
 
-    //Арматура
+    //Катанка
     public function parseKatanka($categoryUrl) {
         $this->info('parse url: ' . $categoryUrl);
         $res = $this->client->get($categoryUrl);

@@ -125,7 +125,8 @@ class Product extends Model {
 
     //related
     public function related() {
-        return $this->hasMany(ProductRelated::class, 'product_id');
+        return $this->hasMany(ProductRelated::class, 'product_id')
+            ->join('products', 'product_related.related_id', '=', 'products.id');
     }
 
     public function params_on_list() {

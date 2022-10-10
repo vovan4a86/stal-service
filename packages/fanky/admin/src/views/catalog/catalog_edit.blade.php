@@ -41,6 +41,7 @@
                 {!! Form::groupText('keywords', $catalog->keywords, 'keywords') !!}
                 {!! Form::groupText('description', $catalog->description, 'description') !!}
 
+
                 <div class="form-group">
                     <label for="article-image">Изображение</label>
                     <input id="article-image" type="file" name="image" value="" onchange="return newsImageAttache(this, event)">

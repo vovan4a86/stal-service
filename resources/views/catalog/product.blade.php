@@ -59,7 +59,7 @@
                         </div>
                         <div class="product__info">
                             <div class="product-data">
-                                <div class="product-data__price">Цена 63 244,00 руб. / т</div>
+                                <div class="product-data__price">Цена {{ number_format($product->price, 2, ',', ' ') }} руб. / {{ $product->measure }}</div>
                                 <div class="product-data__fields">
                                     <div class="fields">
                                         <div class="fields__field">
@@ -112,37 +112,33 @@
                     <div class="params">
                         <div class="params__title">Характеристики</div>
                         <div class="params__grid">
+                            @php
+                                $first_column = ceil(count($params) / 2);
+                                $second_column = count($params) - $first_column;
+                            @endphp
                             <div class="params__column">
                                 <div class="params__fields">
-                                    <dl class="params__field">
-                                        <dt class="params__param">Ширина 1</dt>
-                                        <dd class="params__value">10</dd>
-                                    </dl>
-                                    <dl class="params__field">
-                                        <dt class="params__param">Ширина 2</dt>
-                                        <dd class="params__value">10</dd>
-                                    </dl>
-                                    <dl class="params__field">
-                                        <dt class="params__param">Толщина</dt>
-                                        <dd class="params__value">1.2</dd>
-                                    </dl>
-                                    <dl class="params__field">
-                                        <dt class="params__param">Плоскоовальная</dt>
-                                        <dd class="params__value"></dd>
-                                    </dl>
+                                    @for($i = 0; $i < $first_column; $i++)
+                                        @php
+                                            $alias = $params[$i]['alias'];
+                                        @endphp
+                                        <dl class="params__field">
+                                            <dt class="params__param">{{ $params[$i]['name'] }}</dt>
+                                            <dd class="params__value">{{ $product->$alias }}</dd>
+                                        </dl>
+                                    @endfor
                                 </div>
                             </div>
                             <div class="params__column">
-                                <div class="params__fields">
+                                @for($i = $second_column + 1; $i < count($params); $i++)
+                                    @php
+                                        $alias = $params[$i]['alias'];
+                                    @endphp
                                     <dl class="params__field">
-                                        <dt class="params__param">ГОСТ</dt>
-                                        <dd class="params__value">ГОСТ</dd>
+                                        <dt class="params__param">{{ $params[$i]['name'] }}</dt>
+                                        <dd class="params__value">{{ $product->$alias }}</dd>
                                     </dl>
-                                    <dl class="params__field">
-                                        <dt class="params__param">Наличие некондиции</dt>
-                                        <dd class="params__value">1.2</dd>
-                                    </dl>
-                                </div>
+                                @endfor
                             </div>
                         </div>
                     </div>
@@ -165,91 +161,19 @@
                             </div>
                         </div>
                     </section>
+                    @if($related)
                     <nav class="related-products">
                         <div class="related-products__title">Похожие товары:</div>
                         <ul class="related-products__list">
+                            @foreach($related as $item)
                             <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Труба 200х100х6 профильна" target="_blank">Труба 200х100х6 профильна</a>
-                                <span>140 890 ₽</span>
+                                <a class="related-products__link" href="{{ $item->url }}" title="{{ $item->name }}" target="_blank">{{ $item->name }}</a>
+                                <span>{{ number_format($item->price, 0, ' ', ' ') }} ₽</span>
                             </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Труба 200х100х6 профильна" target="_blank">Труба 200х100х6 профильна</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Труба 200х100х6 профильна" target="_blank">Труба 200х100х6 профильна</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Труба 200х100х6 профильна" target="_blank">Труба 200х100х6 профильна</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Труба 200х100х6 профильна" target="_blank">Труба 200х100х6 профильна</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Труба 200х100х6 профильна" target="_blank">Труба 200х100х6 профильна</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Труба 200х100х6 профильна" target="_blank">Труба 200х100х6 профильна</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Труба 200х100х6 профильна" target="_blank">Труба 200х100х6 профильна</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
-                            <li class="related-products__item">
-                                <a class="related-products__link" href="javascript:void(0)" title="Трубы горячедеформированные 57х10, Ст20" target="_blank">Трубы горячедеформированные 57х10, Ст20</a>
-                                <span>140 890 ₽</span>
-                            </li>
+                            @endforeach
                         </ul>
                     </nav>
+                    @endif
                 </div>
             </section>
         </main>
