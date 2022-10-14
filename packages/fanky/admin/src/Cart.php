@@ -46,12 +46,11 @@ class Cart {
 	 * сумма всех в корзине
 	 * @return int
 	 */
-	public static function sum()
-	{
+	public static function sum() {
 		$cart = self::all();
 		$sum = 0;
 		foreach ($cart as $item) {
-			$sum += $item['price'];
+			$sum += Product::fullPrice($item['price']);
 		}
 		return $sum;
 	}

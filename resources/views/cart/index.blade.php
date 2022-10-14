@@ -6,7 +6,8 @@
         <section class="cart-blank section {{ Request::url() === '/' ? '' : 'section--inner' }}">
             @if(count($items) == 0)
                 <div class="cart-blank__container container">
-                    <img class="cart-blank__picture lazy" src="/" data-src="/static/images/common/cart.svg" alt="alt" width="165" height="165">
+                    <img class="cart-blank__picture lazy" src="/" data-src="/static/images/common/cart.svg" alt="alt"
+                         width="165" height="165">
                     <h2 class="cart-blank__title">Ваша корзина пока пуста</h2>
                     <p class="cart-blank__text">Воспользуйтесь поиском или
                         <a href="{{ route('catalog.index') }}">каталогом</a>, чтобы найти всё что нужно.</p>
@@ -48,93 +49,103 @@
                                 </div>
                                 <!-- row-->
                                 @foreach($items as $item)
-                                    <div class="cart-table__row" data-cart-order="{{ $item['id'] }}">
-                                    <div class="cart-table__grid">
-                                        <div class="cart-table__column cart-table__column--size-4">
-                                            <div class="cart-table__product">
-                                                <div class="cart-item">
-                                                    <div class="cart-item__content">
-                                                        <a class="cart-item__link" href="{{ $item['url'] }}" target="_blank">
-                                                            <img class="cart-item__picture lazy" src="/" data-src="static/images/common/cart-item.png" width="67" height="44" alt="alt" />
-                                                        </a>
-                                                        <div class="cart-item__body">
-                                                            <a class="cart-item__title" href="{{ $item['url'] }}" target="_blank">{{ $item['name'] }}</a>
-                                                            <div class="cart-item__status">
-                                                                <div class="product-status product-status--instock">
-                                                                    В наличии
-                                                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                        <path d="M8.4375 2.81274L4.0625 7.18755L1.875 5.00024" stroke="#52AA52" stroke-linecap="round" stroke-linejoin="round" />
-                                                                    </svg>
+                                    <div class="cart-table__row" id="product-{{$item['id']}}" data-cart-order="{{ $item['id'] }}">
+                                        <div class="cart-table__grid">
+                                            <div class="cart-table__column cart-table__column--size-4">
+                                                <div class="cart-table__product">
+                                                    <div class="cart-item">
+                                                        <div class="cart-item__content">
+                                                            <a class="cart-item__link" href="{{ $item['url'] }}"
+                                                               target="_blank">
+                                                                <img class="cart-item__picture lazy" src="{{ $item['image'] }}"
+                                                                     data-src="{{ $item['image'] }}"
+                                                                     width="67" height="44" alt="alt"/>
+                                                            </a>
+                                                            <div class="cart-item__body">
+                                                                <a class="cart-item__title" href="{{ $item['url'] }}"
+                                                                   target="_blank">{{ $item['name'] }}</a>
+                                                                <div class="cart-item__status">
+                                                                    @if($item['in_stock'] == 1)
+                                                                        <div class="product-status product-status--instock">
+                                                                            В наличии
+                                                                            <svg width="10" height="10"
+                                                                                 viewBox="0 0 10 10" fill="none"
+                                                                                 xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M8.4375 2.81274L4.0625 7.18755L1.875 5.00024"
+                                                                                      stroke="#52AA52"
+                                                                                      stroke-linecap="round"
+                                                                                      stroke-linejoin="round"/>
+                                                                            </svg>
+                                                                        </div>
+                                                                    @elseif($item['in_stock'] == 2)
+                                                                        <div class="product-status product-status--out-stock">
+                                                                            Под заказ
+                                                                        </div>
+                                                                    @else
+                                                                        <div class="product-status product-status--out-stock">
+                                                                            Временно отсутствует
+                                                                        </div>
+                                                                    @endif
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="cart-table__column cart-table__column--size-2" data-field="Цена">
-                                            <div class="cart-table__price" data-currency="₽">{{ $item['price'] }}</div>
-                                        </div>
-                                        <div class="cart-table__column cart-table__column--size-2" data-field="Кол-во.">
-                                            <div class="cart-table__count" data-cart-count>1</div>
-                                        </div>
-                                        <div class="cart-table__column cart-table__column--size-2" data-field="Ед. изм.">
-                                            <div class="cart-table__sizing">{{ $item['measure'] }}</div>
-                                        </div>
-                                        <div class="cart-table__column cart-table__column--size-3" data-field="Итого с НДС">
-                                            <div class="cart-table__actions">
-                                                <div class="cart-table__price" data-currency="₽" data-cart-price>{{ $item['price'] }}</div>
-                                                <div class="cart-table__controls">
-                                                    <button class="cart-control cart-control--edit" type="button" data-edit-order="{{ $item['id'] }}"
-                                                            data-order-edit data-name="Арматура 12 11.7м А500 34028-16" data-price="63244.70" data-count="32" data-src="#edit-order" aria-label="Изменить">
-                                                        <svg class="svg-sprite-icon icon-pencil">
-                                                            <use xlink:href="static/images/sprite/symbol/sprite.svg#pencil"></use>
-                                                        </svg>
-                                                    </button>
-                                                    <button class="cart-control cart-control--remove" type="button" data-remove-order="{{ $item['id'] }}" aria-label="Удалить">
-                                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M14.0625 3.9375L3.9375 14.0625" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                                            <path d="M14.0625 14.0625L3.9375 3.9375" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                                        </svg>
+                                            <div class="cart-table__column cart-table__column--size-2"
+                                                 data-field="Цена">
+                                                <div class="cart-table__price"
+                                                     data-currency="₽">{{ \Fanky\Admin\Models\Product::fullPrice($item['price']) }}</div>
+                                            </div>
+                                            <div class="cart-table__column cart-table__column--size-2"
+                                                 data-field="Кол-во.">
+                                                <div class="cart-table__count" data-cart-count>1</div>
+                                            </div>
+                                            <div class="cart-table__column cart-table__column--size-2"
+                                                 data-field="Ед. изм.">
+                                                <div class="cart-table__sizing">{{ $item['measure'] }}</div>
+                                            </div>
+                                            <div class="cart-table__column cart-table__column--size-3"
+                                                 data-field="Итого с НДС">
+                                                <div class="cart-table__actions">
+                                                    <div class="cart-table__price" data-currency="₽"
+                                                         data-cart-price>{{ \Fanky\Admin\Models\Product::fullPrice($item['price']) }}</div>
+                                                    <div class="cart-table__controls">
+                                                        <button class="cart-control cart-control--edit" type="button"
+                                                                data-edit-order="{{ $item['id'] }}"
+                                                                data-order-edit
+                                                                data-name="{{ $item['name'] }}"
+                                                                data-price="{{ \Fanky\Admin\Models\Product::fullPrice($item['price']) }}"
+                                                                data-count="{{ $item['count'] }}"
+                                                                data-length="{{ $item['length'] }}"
+                                                                data-src="#edit-order" aria-label="Изменить">
+                                                            <svg class="svg-sprite-icon icon-pencil">
+                                                                <use xlink:href="static/images/sprite/symbol/sprite.svg#pencil"></use>
+                                                            </svg>
+                                                        </button>
+                                                        <button class="cart-control cart-control--remove" type="button"
+                                                                data-remove-order="{{ $item['id'] }}"
+                                                                aria-label="Удалить">
+                                                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M14.0625 3.9375L3.9375 14.0625"
+                                                                      stroke="currentColor" stroke-width="2"
+                                                                      stroke-linecap="round" stroke-linejoin="round"/>
+                                                                <path d="M14.0625 14.0625L3.9375 3.9375"
+                                                                      stroke="currentColor" stroke-width="2"
+                                                                      stroke-linecap="round" stroke-linejoin="round"/>
+                                                            </svg>
 
-                                                    </button>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
                                 @endforeach
                             </div>
                         </div>
-                        <div class="cart__values">
-                            <div class="cart-data">
-                                <div class="cart-data__subtitle">Ваш заказ</div>
-                                <div class="cart-data__weight">Общий вес заказа: - т</div>
-                                <div class="cart-data__prices">
-                                    <div class="cart-data__price">
-                                        <dl>
-                                            <dt>Сумма:</dt>
-                                            <dd data-currency="₽">{{ $sum }}</dd>
-                                        </dl>
-                                    </div>
-                                    <div class="cart-data__price">
-                                        <dl>
-                                            <dt>Итого:</dt>
-                                            <dd data-currency="₽">{{ $sum }}</dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                                <ul class="cart-data__labels">
-                                    <li class="cart-data__label">* Все цены с учетом НДС</li>
-                                    <li class="cart-data__label">* Окончательную стоимость заказа Вам сообщит менеджер.</li>
-                                </ul>
-                                <div class="cart-data__action">
-                                    <button class="btn btn--content" type="button" data-proceed-order>
-                                        <span>Оформить заказ</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        @include('blocks.cart_values')
                     </div>
                     <div class="cart__hidden is-hidden" data-cart-hidden>
                         <!-- data-->
@@ -155,17 +166,20 @@
                                 <div class="cart__fields">
                                     <div class="cart__field">
                                         <label class="cart__label">Имя *
-                                            <input class="cart__input" type="text" name="name" placeholder="Представьтесь пожалуйста" autocomplete="off" required>
+                                            <input class="cart__input" type="text" name="name"
+                                                   placeholder="Представьтесь пожалуйста" autocomplete="off" required>
                                         </label>
                                     </div>
                                     <div class="cart__field">
                                         <label class="cart__label">Телефон *
-                                            <input class="cart__input" type="tel" name="phone" placeholder="+7 (___) ___-__-__" autocomplete="off" required>
+                                            <input class="cart__input" type="tel" name="phone"
+                                                   placeholder="+7 (___) ___-__-__" autocomplete="off" required>
                                         </label>
                                     </div>
                                     <div class="cart__field">
                                         <label class="cart__label">Email
-                                            <input class="cart__input" type="text" name="email" placeholder="Введите Email" autocomplete="off">
+                                            <input class="cart__input" type="text" name="email"
+                                                   placeholder="Введите Email" autocomplete="off">
                                         </label>
                                     </div>
                                 </div>
@@ -176,12 +190,14 @@
                                     <div class="cart__fields">
                                         <div class="cart__field">
                                             <label class="cart__label">ИНН *
-                                                <input class="cart__input" type="text" name="inn" placeholder="00 0000 0000" autocomplete="off" required>
+                                                <input class="cart__input" type="text" name="inn"
+                                                       placeholder="00 0000 0000" autocomplete="off" required>
                                             </label>
                                         </div>
                                         <div class="cart__field">
                                             <label class="cart__label">Наименование *
-                                                <input class="cart__input" type="text" name="company" placeholder="Название компании" autocomplete="off" required>
+                                                <input class="cart__input" type="text" name="company"
+                                                       placeholder="Название компании" autocomplete="off" required>
                                             </label>
                                         </div>
                                     </div>
@@ -191,7 +207,8 @@
                                     <div class="cart__upload-trigger">
                                         <label class="upload">
                                             <span class="upload__name">Прикрепить файл</span>
-                                            <input class="v-hidden" type="file" name="file" accept=".jpg, .jpeg, .png, .pdf, .doc, .docs, .xls, .xlsx">
+                                            <input class="v-hidden" type="file" name="file"
+                                                   accept=".jpg, .jpeg, .png, .pdf, .doc, .docs, .xls, .xlsx">
                                         </label>
                                         <span class="upload__status">Размер файла не более 2 мб</span>
                                     </div>
@@ -215,7 +232,9 @@
                                 <div class="cart__grids" data-hide-content>
                                     <div class="cart__delivery">
                                         <label class="cart__label">Адрес доставки *
-                                            <input class="cart__input" type="text" name="address" placeholder="Для расчёта стоимости доставки" autocomplete="off" required>
+                                            <input class="cart__input" type="text" name="address"
+                                                   placeholder="Для расчёта стоимости доставки" autocomplete="off"
+                                                   required>
                                         </label>
                                     </div>
                                     <div class="cart__timing">
@@ -231,7 +250,9 @@
                             </div>
                             <div class="cart__comment">
                                 <label class="cart__label">Комментарий
-                                    <textarea class="cart__input" rows="4" name="text" placeholder="Расскажите, как быстрее добраться к вам, укажите информацию, которая может пригодиться " autocomplete="off"></textarea>
+                                    <textarea class="cart__input" rows="4" name="text"
+                                              placeholder="Расскажите, как быстрее добраться к вам, укажите информацию, которая может пригодиться "
+                                              autocomplete="off"></textarea>
                                 </label>
                             </div>
                             <div class="cart__requires">

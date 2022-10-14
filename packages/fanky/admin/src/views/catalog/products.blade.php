@@ -26,7 +26,8 @@
                 <tr>
                     <th width="100"></th>
                     <th>Название</th>
-                    <th width="120">Цена</th>
+                    <th width="120">Цена без наценки</th>
+                    <th width="120">Цена с наценкой {{ Settings::get('multiplier') }}%</th>
                     <th width="120">Сортировка</th>
                     <th width="50"></th>
                 </tr>
@@ -40,17 +41,18 @@
                             @endif
                         </td>
                         <td><a href="{{ route('admin.catalog.productEdit', [$item->id]) }}" onclick="return catalogContent(this)" style="{{ $item->published != 1 ? 'text-decoration:line-through;' : '' }}">{{ $item->name }}</a></td>
-                        <td>{{ number_format($item->price, 0, '.', ' ') }}</td>
+                        <td>{{ number_format($item->price, 2, '.', ' ') }}</td>
+                        <td>{{ number_format($item->multiplyPrice($item->price), 2, '.', ' ') }}</td>
                         <td>
                             <form class="input-group input-group-sm"
                                   action="{{ route('admin.catalog.update-order', [$item->id]) }}"
                                   onsubmit="update_order(this, event)">
                                 <input type="number" name="order" class="form-control" step="1" value="{{ $item->order }}">
                                 <span class="input-group-btn">
-                                            <button class="btn btn-success btn-flat" type="submit">
-                                               <span class="glyphicon glyphicon-ok"></span>
-                                            </button>
-                                        </span>
+                                    <button class="btn btn-success btn-flat" type="submit">
+                                       <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                </span>
                             </form>
                         </td>
                         <td>

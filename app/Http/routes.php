@@ -26,6 +26,7 @@ Route::group(['prefix' => 'ajax', 'as' => 'ajax.'], function () {
     Route::post('update-to-cart', [AjaxController::class, 'postUpdateToCart']);
     Route::post('remove-from-cart', [AjaxController::class, 'postRemoveFromCart']);
     Route::post('purge-cart', [AjaxController::class, 'postPurgeCart']);
+    Route::post('edit-cart-product', [AjaxController::class, 'postEditCartProduct']);
     Route::post('order', [AjaxController::class, 'postOrder'])->name('order');
 	Route::post('request', 'AjaxController@postRequest')->name('request');
     Route::post('fast-request', 'AjaxController@postFastRequest')->name('fast-request');
@@ -41,6 +42,8 @@ Route::group(['prefix' => 'ajax', 'as' => 'ajax.'], function () {
         ->name('search');
     Route::post('set-view/{view}', 'AjaxController@postSetView')
         ->name('set-view');
+    Route::post('update-filter', 'AjaxController@postUpdateFilter')
+        ->name('update-filter');
 });
 Route::group(['middleware' => ['redirects', 'regions']], function() {
 	Route::get('/', 'WelcomeController@index')

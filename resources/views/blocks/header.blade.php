@@ -96,10 +96,14 @@
                                     <div class="catalog-header__products" data-view="{{ $loop->iteration }}">
                                         <ul class="catalog-header__list">
                                             @foreach($subItems as $subItem)
-                                                <li class="catalog-header__item">
-                                                    <a class="catalog-header__product" href="{{ $subItem->url }}"
-                                                       title="{{ $subItem->name }}">{{ $subItem->name }}</a>
-                                                </li>
+                                                @if($loop->iteration > 15)
+                                                    @continue
+                                                @else
+                                                    <li class="catalog-header__item">
+                                                        <a class="catalog-header__product" href="{{ $subItem->url }}"
+                                                           title="{{ $subItem->name }}">{{ $subItem->name }}</a>
+                                                    </li>
+                                                @endif
                                             @endforeach
                                                 <li class="catalog-header__item">
                                                     <a class="catalog-header__product" href="{{ $topItem->url }}"

@@ -20,7 +20,6 @@
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab_1" data-toggle="tab">Параметры</a></li>
-            <li><a href="#tab_params" data-toggle="tab">Характеристики</a></li>
             <li><a href="#tab_2" data-toggle="tab">Текст</a></li>
             <li><a href="#tab_4" data-toggle="tab">Изображения</a></li>
             <li><a href="#tab_5" data-toggle="tab">Похожие товары</a></li>
@@ -48,9 +47,16 @@
                 {!! Form::groupNumber('price', $product->price, 'Цена', ['step' => 1]) !!}
                 {!! Form::groupText('measure', $product->measure, 'Измерение') !!}
 
-                {!! Form::groupCheckbox('published', 1, $product->published, 'Показывать товар') !!}
+                @if(count($add_params))
+                    @foreach($add_params as $param)
+                        {!! Form::groupText($param->alias, $param->value, $param->name) !!}
+                    @endforeach
+                @endif
+                <hr>
+                {!! Form::groupSelect('in_stock', [0 => 'Временно отсутствует', 1 => 'В наличии', 2 => 'Под заказ' ], $product->in_stock, 'Наличие') !!}
                 {!! Form::hidden('in_stock', 0) !!}
-                {!! Form::groupCheckbox('in_stock', 1, $product->in_stock, 'В наличии') !!}
+                {!! Form::groupCheckbox('published', 1, $product->published, 'Показывать товар') !!}
+{{--                {!! Form::groupCheckbox('in_stock', 1, $product->in_stock, 'В наличии') !!}--}}
 {{--                {!! Form::groupCheckbox('on_main', 1, $product->on_main, 'Показывать на главной') !!}--}}
 
                 {!! Form::hidden('is_action', 0) !!}
@@ -59,7 +65,6 @@
                 {!! Form::groupCheckbox('is_popular', 1, $product->is_popular, 'Популярный товар') !!}
 
             </div>
-            @include('admin::catalog.tabs.tab_params')
             <div class="tab-pane" id="tab_2">
 {{--                {!! Form::groupRichtext('product__points', $product->product__points, 'Преимущества на странице товара', ['rows' => 3]) !!}--}}
                 {!! Form::groupRichtext('announce_text', $product->announce_text, 'Краткое описание', ['rows' => 3]) !!}
@@ -72,10 +77,12 @@
                 @if ($product->id)
                     <div class="form-group">
                         <label class="btn btn-success">
-                            <input id="offer_imag_upload" type="file" multiple data-url="{{ route('admin.catalog.productImageUpload', $product->id) }}" style="display:none;" onchange="productImageUpload(this, event)">
+                            <input id="offer_imag_upload" type="file" multiple data-url="{{ route('admin.catalog.productImageUpload', $product->id) }}"
+                                   style="display:none;" onchange="productImageUpload(this, event)">
                             Загрузить изображения
                         </label>
                     </div>
+                    <p>Размер изображения: 492x302</p>
 
                     <div class="images_list">
                         @foreach ($product->images()->orderBy('order')->get() as $image)

@@ -106,6 +106,20 @@ class Catalog extends Model {
             ->join('params', 'catalog_params.param_id', '=', 'params.id');
     }
 
+    public function filters() {
+        return $this->hasMany('Fanky\Admin\Models\CatalogFilter', 'catalog_id')
+            ->join('params', 'catalog_filters.param_id', '=', 'params.id');
+    }
+
+    public function catalog_filters() {
+        return $this->belongsToMany(CatalogFilter::class, 'catalog_filters', 'catalog_id', 'param_id');
+    }
+
+    public function add_params() {
+        return $this->hasMany(CatalogParam::class, 'catalog_id')
+            ->join('params', 'catalog_params.param_id', '=', 'params.id');
+    }
+
 	public function public_products() {
 		return $this->hasMany('Fanky\Admin\Models\Product', 'catalog_id')
 			->public()->orderBy('order');
@@ -182,6 +196,15 @@ class Catalog extends Model {
 
 		return $catalogs;
 	}
+
+    public function findRootCategory($catalog_id) {
+        $cur_cat = Catalog::find($catalog_id);
+        if($cur_cat->parent_id == 0) {
+            return $cur_cat;
+        } else {
+            $this->findRootCategory($cur_cat->parent_id);
+        }
+    }
 
 	/**
 	 * @param string,string[] $path

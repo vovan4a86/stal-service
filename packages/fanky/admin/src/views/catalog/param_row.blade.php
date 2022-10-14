@@ -1,9 +1,7 @@
 <tr id="param{{ $param->id }}">
     <td>{{ $param->name }}</td>
-    <td>{{ $param->value }}</td>
-    <td>{{ $param->group }}</td>
-    <td>@include('admin::blocks.boolean_view', ['check' => $param->on_list])</td>
-    <td>@include('admin::blocks.boolean_view', ['check' => $param->on_spec])</td>
+    <td>{{ $param->alias }}</td>
+    <td>{{ $param->measure }}</td>
     <td>
         <a href="{{ route('admin.catalog.edit_param', [$param->id]) }}" class="btn btn-default edit-param" onclick="editParam(this, event)">
             <i class="fa fa-pencil text-yellow"></i></a>

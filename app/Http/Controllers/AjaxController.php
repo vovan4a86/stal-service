@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use DB;
+use Fanky\Admin\Models\Catalog;
 use Fanky\Admin\Models\City;
 use Fanky\Admin\Models\Feedback;
 use Fanky\Admin\Models\Order as Order;
@@ -12,6 +13,7 @@ use Mail;
 use Mailer;
 //use Settings;
 use Cart;
+use Session;
 use SiteHelper;
 use Validator;
 
@@ -27,11 +29,15 @@ class AjaxController extends Controller {
         /** @var Product $product */
         $product = Product::find($id);
         if($product) {
+
             $image = $product->image;
             $product_item = $product->toArray();
             $product_item['count'] = $count;
             $product_item['url'] = $product->url;
             $product_item['image'] = $image ? $image->thumb(2) : null;
+
+
+            \Debugbar::log($product_item['image']);
 
             Cart::add($product_item);
         }
@@ -39,6 +45,26 @@ class AjaxController extends Controller {
         $popup = view('blocks.product_added', $product_item)->render();
 
         return ['header_cart' => $header_cart, 'popup' => $popup];
+    }
+
+    public function postEditCartProduct(Request $request) {
+        $id = $request->get('id');
+        $count = $request->get('count', 1);
+        /** @var Product $product */
+        $product = Product::find($id);
+        if($product) {
+            $image = $product->image;
+            $product_item = $product->toArray();
+            $product_item['count'] = $count;
+            $product_item['url'] = $product->url;
+//            $product_item['image'] = $image ? $image->thumb(2) : null;
+
+            Cart::add($product_item);
+        }
+
+        $popup = view('blocks.cart_popup', $product_item)->render();
+
+        return ['cart_popup' => $popup];
     }
 
     public function postUpdateToCart(Request $request) {
@@ -55,9 +81,12 @@ class AjaxController extends Controller {
         $id = $request->get('id');
         Cart::remove($id);
 
-        $header_cart = view('blocks.header_cart')->render();
+        $sum = Cart::sum();
 
-        return ['header_cart' => $header_cart];
+        $header_cart = view('blocks.header_cart')->render();
+        $cart_values = view('blocks.cart_values', ['sum' => $sum ])->render();
+
+        return ['header_cart' => $header_cart, 'cart_values' => $cart_values];
     }
 
     public function postPurgeCart() {
@@ -473,5 +502,78 @@ class AjaxController extends Controller {
         session(['catalog_view' => $view]);
 
         return ['success' => true];
+    }
+
+    public function postUpdateFilter(Request $request) {
+        $column1 = $request->only('column1');
+        $column2 = $request->get('column2');
+        $category_id = $request->get('category_id');
+        $filter_name = $request->get('filter_name');
+
+        \Debugbar::log($column1);
+        \Debugbar::log($column2);
+        \Debugbar::log($category_id);
+        \Debugbar::log($filter_name);
+
+        $category = Catalog::find($category_id)->first();
+
+        if($category->parent_id !== 0) {
+            $root = $category->findRootCategory($category->parent_id);
+        } else {
+            $root = $category;
+        }
+
+        if ($category->parent_id == 0) {
+            $ids = $category->getRecurseChildrenIds();
+            $items = Product::public()->whereIn('catalog_id', $ids)
+                ->where($filter_name, '=', $column2)
+                ->orderBy('name', 'asc')
+                ->paginate(10);
+        } else {
+            $items = $category->products()->where($filter_name, '=', 100)->paginate(10);
+        }
+
+        $filters = $root->filters()->get();
+        $sort = [];
+        foreach ($filters as $filter) {
+            if($ids) {
+                $sort[$filter->alias] = Product::public()->whereIn('catalog_id', $ids)
+                    ->orderBy($filter->alias, 'asc')
+                    ->groupBy($filter->alias)
+                    ->distinct()
+                    ->pluck($filter->alias)
+                    ->all();
+            } else {
+                $sort[$filter->alias] = Product::public()->where('catalog_id', $category->id)
+                    ->orderBy($filter->alias, 'asc')
+                    ->groupBy($filter->alias)
+                    ->distinct()
+                    ->pluck($filter->alias)
+                    ->all();
+            }
+        }
+
+//        $list = view('catalog.views.list', [
+//            'items' => $items,
+//            'category' => $category,
+//            'filters' => $filters,
+//            'sort' => $sort,
+//            'root' => $root,
+//            'per_page' => 10,
+//        ])->render();
+
+        $list = [];
+        foreach ($items as $item) {
+            $list[] = view('catalog.list_row', [
+                'item' => $item,
+                'filters' => $filters,
+                'sort' => $sort,
+                'root' => $root,
+                'per_page' => 10,
+            ])->render();
+        }
+
+        return ['success' => true, 'list' => $list];
+
     }
 }

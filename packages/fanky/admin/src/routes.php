@@ -117,6 +117,10 @@ Route::group(['namespace' => 'Fanky\Admin\Controllers', 'prefix' => 'admin', 'as
             'as'   => '.save_param',
             'uses' => $controller . 'postSaveParam'
         ]);
+        Route::post('update-filter-title/{id}', [
+            'as'   => '.update-filter-title',
+            'uses' => $controller . 'postUpdateFilterTitle'
+        ]);
 	});
 
     Route::group(['as' => '.product-icons', 'prefix' => 'product-icons'], function () {

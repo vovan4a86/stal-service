@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Settings;
 use Thumb;
 use Carbon\Carbon;
 
@@ -243,6 +244,16 @@ class Product extends Model {
         } else {
             return Catalog::find($catalog_id)->name;
         }
+    }
+
+    public function multiplyPrice($price) {
+        $percent = $price * Settings::get('multiplier') / 100;
+        return $price + $percent;
+    }
+
+    public static function fullPrice($price) {
+        $percent = $price * Settings::get('multiplier') / 100;
+        return $price + $percent;
     }
 
 }

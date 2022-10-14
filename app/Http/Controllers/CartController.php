@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use Fanky\Admin\Models\Catalog;
 use Fanky\Admin\Models\Page;
 use Fanky\Admin\Models\Product;
 use Illuminate\Contracts\Validation\Validator;
@@ -20,10 +21,16 @@ class CartController extends Controller {
 //		}
 		$sum = 0;
 		foreach ($items as $key => $item) {
-			$sum += $item['price'] * $item['count'];
+			$sum += Product::fullPrice($item['price']) * $item['count'];
 			$product = Product::find($item['id']);
 			if ($product) {
-				$items[$key]['image'] = $product->thumb(2);
+                $catalog = Catalog::find($product->catalog_id);
+                if($catalog->parent_id !== 0) {
+                    $root = $catalog->findRootCategory($catalog->parent_id);
+                } else {
+                    $root = $catalog;
+                }
+				$items[$key]['image'] = $product->image ? Product::UPLOAD_URL . $product->image : Catalog::UPLOAD_URL . $root->image;;
 			} else {
 //				$items[$key]['image'] = '/images/broken.png';
 			}
@@ -34,7 +41,8 @@ class CartController extends Controller {
 
 
         return view('cart.index', [
-			'items' => $items, 'sum' => $sum,
+			'items' => $items,
+            'sum' => $sum,
 			'bread' => $bread
 		]);
 	}
@@ -67,7 +75,7 @@ class CartController extends Controller {
 				'count' => $item['count'],
 				'price' => $item['price']
 			]);
-			$summ += $item['count'] * $item['price'];
+			$summ += $item['count'] * Product::fullPrice($item['price']);
 			$all_count += $item['count'];
 		}
 		$order->update(['summ' => $summ]);

@@ -8,12 +8,25 @@ $('button.card__cart').on('click', function (e) {
         // $(this).text('Добавлено');
     }.bind(this));
 });
+$('button.catalog-list__add').on('click', function (e) {
+    if($(this).is('.btn--added')) return;
+    const id = $(this).data('product-id');
+    Cart.add(id, 1, function (res) {
+        $('.header__cart').replaceWith(res.header_cart);
+        $('#cart-dialog').html(res.popup);
+        $(this).addClass('btn--added');
+        // $(this).text('Добавлено');
+    }.bind(this));
+});
 
 $('button.cart-control--remove').on('click', function (e) {
     const id = $(this).data('remove-order');
+    const count = $('.section__title.section__title--cart').data('count');
     Cart.remove(id,  function (res) {
-        $('.cart-table__row').data('cart-order',id).remove();
-        // $('.header__cart').replaceWith(res.header_cart);
+        $('#product-' + id).remove();
+        $('.header__cart').replaceWith(res.header_cart);
+        $('.cart__values').replaceWith(res.cart_values);
+        $('.section__title.section__title--cart').attr('data-count', count - 1);
         // $('#cart-dialog').html(res.popup);
         // $(this).text('Добавлено');
     }.bind(this));
@@ -50,6 +63,15 @@ let Cart = {
                 callback(result);
             }
         });
+    },
+
+    edit:  function (id, count, callback) {
+        sendAjax('/ajax/edit-cart-product',
+            {id: id, count: count}, (result) => {
+                if (typeof callback == 'function') {
+                    callback(result);
+                }
+            });
     },
 
     remove: function (id, callback) {
@@ -362,3 +384,52 @@ function setView(el, view) {
         }
     })
 }
+
+// function updateFilter(select, e) {
+//     e.preventDefault();
+//     let name = select.name;
+//     let list = $('.catalog-list__products');
+//     let container = $('.catalog__container');
+//     let paginate = $('.catalog-list__footer .pagination');
+//
+//     let data = null;
+//     let url = null;
+//     if(name === 'column1') {
+//         data = $('#filter_form1').serialize();
+//         url = $('#filter_form1').attr('action')
+//     } else {
+//         data = $('#filter_form2').serialize();
+//         url = $('#filter_form2').attr('action')
+//     }
+//     console.log(data);
+//     sendAjax(url, data, function (json) {
+//         if(json.success == true) {
+//             console.log('success');
+//         }
+//         if(json.list !== 'undefined') {
+//             console.log(json.list);
+//             list.empty();
+//             // container.append(json.list);
+//             for (let elem in json.list) {
+//                 list.append(json.list[elem]);
+//             }
+//         }
+//         // if(json.paginate !== 'undefined') {
+//         //     paginate.empty();
+//         //     paginate.append(json.paginate);
+//         // }
+//     });
+//
+// }
+
+function updateFilter() {
+    // $('#filter_form').submit();
+}
+
+// $('button.cart-control--edit').on('click', function (e) {
+//     const id = $(this).data('edit-order');
+//     console.log(id);
+// })
+
+
+

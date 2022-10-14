@@ -14,13 +14,13 @@
                         <nav class="subcategories">
                             <ul class="subcategories__list">
                                 <li class="subcategories__item">
-                                    <a class="subcategories__link" href="javascript:void(0)"
+                                    <a class="subcategories__link" href="{{ $root->url }}"
                                        title="Показать все">Показать все</a>
                                 </li>
                             </ul>
                         </nav>
                         <div class="catalog__update">
-                            <span>Цены обновлены 06.08.2022</span>
+                            <span>Цены обновлены {{ $updated !== null ? date_format($updated, 'd.m.Y') : null  }}</span>
                         </div>
                     </div>
                 @else
@@ -31,7 +31,9 @@
                                     <a class="sublinks__link sublink" href="{{ $child->url }}"
                                        title="{{ $child->name }}">
                                         <img class="sublink__picture lazy" src="/"
-                                             data-src="/static/images/common/cat-c8.png" alt="" width="64" height="34">
+                                             data-src="{{ $child->image ? \Fanky\Admin\Models\Catalog::UPLOAD_URL . $child->image :
+                                                                          \Fanky\Admin\Models\Catalog::UPLOAD_URL . $category->image }}"
+                                             alt="" width="64" height="34">
                                         <span class="sublink__title">{{ $child->name }}</span>
                                     </a>
                                 </li>
@@ -39,7 +41,7 @@
                         </ul>
                     @endif
                     <div class="catalog__update">
-                        <span>Цены обновлены 06.08.2022</span>
+                        <span>Цены обновлены {{ $updated !== null ? date_format($updated, 'd.m.Y') : null }}</span>
                     </div>
                 @endif
 
@@ -50,7 +52,7 @@
         <section class="section">
             <div class="container">
                 <div class="section__text text-content">
-                    {!! $category->text !!}
+                    {!! $category->text == null ? $root->text : $category->text  !!}
                 </div>
             </div>
         </section>

@@ -261,21 +261,16 @@ function saveRelated(form, e) {
 
 function addParam(elem, e) {
     e.preventDefault();
-    var name = $('.param-name'),
-        value = $('.param-value'),
-        group = $('.param-group'),
-        onList = $('.param-on_list[type=checkbox]'),
-        onSpec = $('.param-on_spec[type=checkbox]')
-    if(!name.val() || !value.val()){
-        alert('Нужно заполнить название и значение');
+    var name = $('.param-name');
+    var measure = $('.param-measure');
+
+    if(!name.val()){
+        alert('Нужно заполнить название');
         return;
     }
     var data = {
         name: name.val(),
-        value: value.val(),
-        group: group.val(),
-        on_list: onList.is(':checked') ? 1: 0,
-        on_spec: onSpec.is(':checked') ? 1: 0,
+        measure: measure.val(),
     }
     var url = $(elem).attr('href');
 
@@ -283,10 +278,7 @@ function addParam(elem, e) {
         if(typeof json.row != 'undefined'){
             $('#param_list tbody').append(json.row);
             name.val('');
-            value.val('');
-            group.val('');
-            onList.prop('checked', false);
-            onSpec.prop('checked', false);
+            measure.val('');
         }
     });
 }
@@ -321,4 +313,17 @@ function saveParam(form, e) {
         popupClose();
         $('tr#param'+id).replaceWith(html);
     }, 'html');
+}
+
+function update_filter_title(form, e) {
+    e.preventDefault();
+    var button = $(form).find('[type="submit"]');
+    button.attr('disabled', 'disabled');
+    var url = $(form).attr('action');
+    var data = $(form).serialize();
+    sendAjax(url, data, function(json){
+        if(json.success == true) {
+            button.removeAttr('disabled');
+        }
+    });
 }

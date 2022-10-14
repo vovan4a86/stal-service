@@ -10,50 +10,43 @@
                 </svg>
                 <span>Показать фильтр</span>
             </div>
-            <div class="catalog-list__hidden" data-filter-content>
-                <div class="catalog-list__grid catalog-list__grid--filters">
-                    <div class="catalog-list__column catalog-list__column--one">
-                        <div class="catalog-list__label">Фото</div>
-                    </div>
-                    <div class="catalog-list__column catalog-list__column--two">
-                        <div class="catalog-list__label">Наименование</div>
-                    </div>
-                    <div class="catalog-list__column catalog-list__column--one catalog-list__column--filter">
-                        <!-- https://slimselectjs.com/options-->
-                        <!-- js--sources/modules/select.js-->
-                        <select class="catalog-select" name="width" multiple>
-                            <option data-placeholder="true">Ширина</option>
-                            <option value="0.8м">0.8м</option>
-                            <option value="0.902м">0.902м</option>
-                            <option value="1.047м">1.047м</option>
-                            <option value="1.057м">1.057м</option>
-                            <option value="1.06м">1.06м</option>
-                            <option value="1.155м">1.155м</option>
-                            <option value="1.15м">1.15м</option>
-                            <option value="1.2м">1.2м</option>
-                        </select>
-                    </div>
-                    <div class="catalog-list__column catalog-list__column--one catalog-list__column--filter">
-                        <select class="catalog-select" name="size" multiple>
-                            <option data-placeholder="true">Толщина</option>
-                            <option value="0.35">0.35</option>
-                            <option value="0.4">0.4</option>
-                            <option value="0.45">0.45</option>
-                            <option value="0.45 ТУ">0.45 ТУ</option>
-                            <option value="0.5">0.5</option>
-                            <option value="0.55">0.55</option>
-                            <option value="0.65">0.65</option>
-                            <option value="0.7">0.7</option>
-                            <option value="0.8">0.8</option>
-                            <option value="0.9">0.9</option>
-                        </select>
-                    </div>
-                    <div class="catalog-list__column catalog-list__column--two">
-                        <div class="catalog-list__label">Цена</div>
+            <form action="" id="filter_form">
+                <div class="catalog-list__hidden" data-filter-content>
+                    <div class="catalog-list__grid catalog-list__grid--filters">
+
+                        <div class="catalog-list__column catalog-list__column--one">
+                            <div class="catalog-list__label">Фото</div>
+                        </div>
+                        <div class="catalog-list__column catalog-list__column--two">
+                            <div class="catalog-list__label">Наименование</div>
+                        </div>
+                        @if(count($filters))
+                            @foreach($filters as $filter)
+                                <input type="hidden" name="category_id" value="{{ $category->id }}">
+                                <input type="hidden" name="filter_name" value="{{ $filter->alias }}">
+                                <div class="catalog-list__column catalog-list__column--one catalog-list__column--filter">
+                                    <!-- https://slimselectjs.com/options-->
+                                    <!-- js--sources/modules/select.js-->
+                                    <select class="catalog-select" name="column{{ $loop->iteration }}" multiple
+                                            onchange="updateFilter(this, event)">
+                                        <option data-placeholder="true">{{ $filter->title }}</option>
+                                        @if($sort)
+                                            @foreach($sort[$filter->alias] as $value)
+                                                <option value="{{ $value }}">{{ $value }}{{ $filter->measure }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            @endforeach
+                            <div class="catalog-list__column catalog-list__column--two">
+                                <div class="catalog-list__label">Цена</div>
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
+
         @if(count($items))
             <div class="catalog-list__products">
                 @foreach($items as $item)

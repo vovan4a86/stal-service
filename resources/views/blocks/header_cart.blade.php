@@ -23,22 +23,3 @@
         </div>
     @endif
 </a>
-
-{{--
-<div class="h_cart" id="h_cart">
-    @if(count($items))
-        <div class="h_cart__sum h_cart--full">{{ $count }} <span>({{ $sum }} руб.)</span></div>
-        <div class="h_cart__drop">
-            <ul class="h_cart__list">
-                @foreach($items as $item)
-                    <li class="h_cart__item"><a href="{{ $item['url'] }}">
-                            {{ $item['name'] }} × {{ $item['count'] }} шт.</a></li>
-                @endforeach
-            </ul>
-            <div class="h_cart__tocart"><a href="/cart">Оформить заказ</a></div>
-        </div>
-    @else
-        <div class="h_cart__sum">Корзина пуста</div>
-    @endif
-</div>
---}}

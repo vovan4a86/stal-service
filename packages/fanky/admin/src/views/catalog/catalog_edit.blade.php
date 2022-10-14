@@ -16,20 +16,25 @@
 @stop
 
 <form action="{{ route('admin.catalog.catalogSave') }}" onsubmit="return catalogSave(this, event)">
-	<input type="hidden" name="id" value="{{ $catalog->id }}">
+    <input type="hidden" name="id" value="{{ $catalog->id }}">
 
-	<div class="nav-tabs-custom">
-		<ul class="nav nav-tabs">
-			<li class="active"><a href="#tab_1" data-toggle="tab">Параметры</a></li>
-			<li><a href="#tab_2" data-toggle="tab">Тексты</a></li>
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab_1" data-toggle="tab">Параметры</a></li>
+            <li><a href="#tab_2" data-toggle="tab">Тексты</a></li>
+
+            @if($catalog->parent_id == 0)
+                <li><a href="#tab_params" data-toggle="tab">Характеристики</a></li>
+                <li><a href="#tab_3" data-toggle="tab">Фильтры сортировки</a></li>
+            @endif
             @if($catalog->id)
                 <li class="pull-right">
                     <a href="{{ $catalog->url }}" target="_blank">Посмотреть</a>
                 </li>
             @endif
-		</ul>
-		<div class="tab-content">
-			<div class="tab-pane active" id="tab_1">
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
 
                 {!! Form::groupText('name', $catalog->name, 'Название') !!}
                 {!! Form::groupText('h1', $catalog->h1, 'H1') !!}
@@ -44,10 +49,13 @@
 
                 <div class="form-group">
                     <label for="article-image">Изображение</label>
-                    <input id="article-image" type="file" name="image" value="" onchange="return newsImageAttache(this, event)">
+                    <input id="article-image" type="file" name="image" value=""
+                           onchange="return newsImageAttache(this, event)">
                     <div id="article-image-block">
                         @if ($catalog->image)
-                            <img class="img-polaroid" src="{{ $catalog->thumb(1) }}" height="100" data-image="{{ $catalog->image_src }}" onclick="return popupImage($(this).data('image'))">
+                            <img class="img-polaroid" src="{{ $catalog->thumb(1) }}" height="100"
+                                 data-image="{{ $catalog->image_src }}"
+                                 onclick="return popupImage($(this).data('image'))">
                         @else
                             <p class="text-yellow">Изображение не загружено.</p>
                         @endif
@@ -61,18 +69,79 @@
                     {!! Form::hidden('on_main_list', 0) !!}
                     {!! Form::groupCheckbox('on_main_list', 1, $catalog->on_main_list, 'Показывать в каталоге продукции') !!}
                 @endif
+            </div>
 
-
-			</div>
-
-			<div class="tab-pane" id="tab_2">
+            <div class="tab-pane" id="tab_2">
                 {!! Form::groupRichtext('announce', $catalog->announce, 'Вводный текст', ['rows' => 3]) !!}
                 {!! Form::groupRichtext('text', $catalog->text, 'Основной текст', ['rows' => 3]) !!}
-			</div>
-		</div>
+            </div>
 
-		<div class="box-footer">
-			<button type="submit" class="btn btn-primary">Сохранить</button>
-		</div>
-	</div>
+            @if($catalog->parent_id == 0)
+                @include('admin::catalog.tabs.tab_params')
+            @endif
+
+            <div class="tab-pane" id="tab_3">
+                @if(!$catalog->id)
+                    <div>Добавление фильтров доступно только после сохранения каталога</div>
+                @else
+                    <div class="form-group" style="width:400px;">
+                        @foreach($filters as $item)
+                            <div>
+                                <label for="{{ $item->alias }}">
+                                    <input type="checkbox"
+                                           name="filters[]"
+                                           {{ (in_array($item->id, $filters_used)) ? 'checked': '' }}
+                                           value="{{ $item->id }}"/>
+                                    {{ $item->name }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    {{--                    <table class="table table-striped table-v-middle">--}}
+                    {{--                        <thead>--}}
+                    {{--                        <tr>--}}
+                    {{--                            <th width="100">Название</th>--}}
+                    {{--                            <th width="100">Alias</th>--}}
+                    {{--                            <th width="400">Title</th>--}}
+                    {{--                        </tr>--}}
+                    {{--                        </thead>--}}
+                    {{--                        <tbody>--}}
+                    {{--                        @foreach($filters as $item)--}}
+                    {{--                            <tr>--}}
+                    {{--                                <th>--}}
+                    {{--                                    <div>--}}
+                    {{--                                        <label for="{{ $item->alias }}">--}}
+                    {{--                                            <input type="checkbox"--}}
+                    {{--                                                   name="filters[]"--}}
+                    {{--                                                   {{ (in_array($item->id, $filters_used)) ? 'checked': '' }}--}}
+                    {{--                                                   value="{{ $item->id }}"/>--}}
+                    {{--                                            {{ $item->name }}--}}
+                    {{--                                        </label>--}}
+                    {{--                                    </div>--}}
+                    {{--                                </th>--}}
+                    {{--                                <th>{{ $item->alias }}</th>--}}
+                    {{--                                <th>--}}
+                    {{--                                    <form class="input-group input-group-sm"--}}
+                    {{--                                          action="{{ route('admin.catalog.update-filter-title', [$item->id]) }}"--}}
+                    {{--                                          onsubmit="update_filter_title(this, event)">--}}
+                    {{--                                        <input name="title" type="text" class="form-control" value="{{ $item->title }}">--}}
+                    {{--                                        <span class="input-group-btn">--}}
+                    {{--                                            <button class="btn btn-success btn-flat">--}}
+                    {{--                                               <span class="glyphicon glyphicon-ok"></span>--}}
+                    {{--                                            </button>--}}
+                    {{--                                        </span>--}}
+                    {{--                                    </form>--}}
+                    {{--                                </th>--}}
+                    {{--                            </tr>--}}
+                    {{--                        @endforeach--}}
+                    {{--                        </tbody>--}}
+                    {{--                    </table>--}}
+                @endif
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+    </div>
 </form>

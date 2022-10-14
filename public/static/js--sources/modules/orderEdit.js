@@ -18,14 +18,19 @@ const orderEdit = () => {
           const orderName = orderItem.dataset.name;
           const orderPrice = orderItem.dataset.price;
           const orderCount = orderItem.dataset.count;
+          const orderLength = orderItem.dataset.length;
 
           const popupTitle = popup.querySelector('[data-popup-title]');
           const popupTotal = popup.querySelector('[data-popup-total]');
           const popupSummary = popup.querySelector('[data-popup-summary]');
           const popupWeight = popup.querySelector('[data-popup-weight]');
+          const popupLength = popup.querySelector('[data-popup-length]');
+          const popupPrice = popup.querySelector('[data-popup-price]');
 
           popupTitle.textContent = orderName;
           popupWeight.value = orderCount;
+          popupLength.value = orderLength;
+          popupPrice.value = orderPrice;
 
           popupSummary.textContent = calculate(orderPrice, orderCount);
           popupTotal.value = calculate(orderPrice, orderCount);
@@ -40,3 +45,4 @@ const orderEdit = () => {
 };
 
 orderEdit();
+

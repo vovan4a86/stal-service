@@ -7,6 +7,7 @@
             <div class="container">
                 <div class="section__links">
                     <h2 class="section__title">Каталог продукциии</h2>
+                    {{--
                     @if(Settings::get('catalog_price'))
                         <a class="btn btn--outlined btn--tag" href="{{ Settings::fileSrc(Settings::get('catalog_price')) }}" download="Прайс-лист Сталь-Сервис">
                             <svg class="svg-sprite-icon icon-tag">
@@ -22,6 +23,7 @@
                             <span>Прайс-лист не добавлен</span>
                         </span>
                     @endif
+                    --}}
                 </div>
                 <ul class="products__list">
                     @foreach($categories as $item)
