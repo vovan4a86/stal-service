@@ -24,7 +24,7 @@
             <li><a href="#tab_2" data-toggle="tab">Тексты</a></li>
 
             @if($catalog->parent_id == 0)
-                <li><a href="#tab_params" data-toggle="tab">Характеристики</a></li>
+{{--                <li><a href="#tab_params" data-toggle="tab">Характеристики</a></li>--}}
                 <li><a href="#tab_3" data-toggle="tab">Фильтры сортировки</a></li>
             @endif
             @if($catalog->id)
@@ -76,9 +76,9 @@
                 {!! Form::groupRichtext('text', $catalog->text, 'Основной текст', ['rows' => 3]) !!}
             </div>
 
-            @if($catalog->parent_id == 0)
-                @include('admin::catalog.tabs.tab_params')
-            @endif
+{{--            @if($catalog->parent_id == 0)--}}
+{{--                @include('admin::catalog.tabs.tab_params')--}}
+{{--            @endif--}}
 
             <div class="tab-pane" id="tab_3">
                 @if(!$catalog->id)

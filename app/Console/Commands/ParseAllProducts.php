@@ -46,9 +46,9 @@ class ParseAllProducts extends Command {
      * @return mixed
      */
     public function handle() {
-//		foreach ($this->categoryList() as $categoryName => $categoryUrl) {
-//            $this->parseCategory($categoryName, $categoryUrl);
-//		}
+		foreach ($this->categoryList() as $categoryName => $categoryUrl) {
+            $this->parseCategory($categoryName, $categoryUrl);
+		}
         $this->parseProfnastil('Профнастил','https://www.spk.ru/catalog/krovlya/profnastil/');
         $this->parseList('Лист', 'https://www.spk.ru/catalog/metalloprokat/listovoy-prokat/');
 
@@ -91,7 +91,6 @@ class ParseAllProducts extends Command {
         $crawler->filter('.product-card__wrap_list-alt-wrap .product-card')->each(function (Crawler $node, $i) use ($catalog, $categoryName, $subcatname) {
             $name = trim($node->filter('a.product-card__title-link')->first()->text());
 
-            //если товар не в наличии, то следующий
             if ($node->filter('.product__stock-in')->count()) {
                 $in_stock = 1;
             }
