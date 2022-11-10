@@ -199,11 +199,10 @@ class Catalog extends Model {
 
     public function findRootCategory($catalog_id) {
         $cur_cat = Catalog::find($catalog_id);
-        if($cur_cat->parent_id == 0) {
-            return $cur_cat;
-        } else {
+        if($cur_cat->parent_id !== 0) {
             $this->findRootCategory($cur_cat->parent_id);
         }
+        return $cur_cat;
     }
 
 	/**
@@ -259,6 +258,22 @@ class Catalog extends Model {
 
 		return $ids;
 	}
+
+    public function getRecurseChildrenIdsInner(self $parent = null) {
+        if (!$parent) $parent = $this;
+        $ids = self::query()->where('slug', 'like', $parent->slug)
+            ->pluck('id')->all();
+
+        return $ids;
+    }
+
+    public function getRecurseChildrenIdsSubcat(self $parent = null) {
+        if (!$parent) $parent = $this;
+        $ids = self::query()->where('slug', 'like', $parent->slug)
+            ->pluck('id')->all();
+
+        return $ids;
+    }
 
 	public function getRecurseProductsCount() {
 		$count = Cache::remember('product_count_' . $this->id, env('CACHE_TIME'), function () {

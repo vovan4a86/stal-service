@@ -21,18 +21,18 @@
                         <div class="dialog-city__actions">
                             <button class="dialog-city__action dialog-city__action--confirm"
                                     type="button" data-city-confirm="confirm"
-{{--                                    aria-label="Подтвердить город Екатеринбург">--}}
-{{--                                    data-id="{{ ($current_city)? $current_city->id: 0 }}"--}}
-{{--                                    data-cur_url="{{ Request::path() }}"--}}
-{{--                                    data-confirm-region--}}
+                                    aria-label="Подтвердить город Екатеринбург"
+                                    data-id="{{ ($current_city)? $current_city->id: 0 }}"
+                                    data-cur_url="{{ Request::path() }}"
+                                    data-confirm-region>
                                 <span>Да</span>
                             </button>
                             <a class="dialog-city__action dialog-city__action--change"
                                     href="{{ route('ajax.show-popup-cities') }}"
                                     title="Изменить регион"
-{{--                                    type="button" data-src="{{ route('ajax.show-popup-cities') }}"--}}
-{{--                                    data-fancybox data-type="ajax" data-city-change="change"--}}
-{{--                                    aria-label="Изменить текущий город"--}}
+                                    type="button" data-src="{{ route('ajax.show-popup-cities') }}"
+                                    data-fancybox data-type="ajax" data-city-change="change"
+                                    aria-label="Изменить текущий город"
                                    >
                                 <span>Нет, другой</span>
                             </a>
@@ -75,11 +75,7 @@
                         <div class="catalog-header__content" data-nav-tabs>
                             <div class="catalog-header__nav">
                                 @foreach($catalogTop as $topItem)
-{{--                                    @php--}}
-{{--                                        $isActive = stripos(Request::url(), $topItem->url);--}}
-{{--                                    @endphp--}}
-{{--                                    {{ $isActive !== false ? 'is-active' : '' }}--}}
-                                    <a class="catalog-header__link"
+                                        <a class="catalog-header__link {{ $loop->iteration == 1 ? 'is-active' : '' }}"
                                        href="{{$topItem->url}}" title="{{ $topItem->name }}"
                                        data-open="{{ $loop->iteration }}">
                                         <span>{{ $topItem->name }}</span>
@@ -93,7 +89,7 @@
                             </div>
                             @foreach($catalogTop as $topItem)
                                 @if(count($subItems = $topItem->getAllPublicChildren()))
-                                    <div class="catalog-header__products" data-view="{{ $loop->iteration }}">
+                                    <div class="catalog-header__products {{ $loop->iteration == 1 ? 'is-active' : '' }}" data-view="{{ $loop->iteration }}">
                                         <ul class="catalog-header__list">
                                             @foreach($subItems as $subItem)
                                                 @if($loop->iteration > 15)
@@ -127,8 +123,8 @@
                 </nav>
             </div>
             <div class="header__column header__column--wide">
-                <form class="header__search search-header" action="{{ route('search') }}" method="get">
-                    <input class="search-header__input" type="search" name="find"
+                <form class="header__search search-header" action="{{ route('search') }}">
+                    <input class="search-header__input" type="search" name="q" value="{{ Request::get('q') }}"
                            placeholder="Поиск" aria-label="Поиск по сайту" required>
                     <button class="search-header__button">
                         <svg class="svg-sprite-icon icon-search">

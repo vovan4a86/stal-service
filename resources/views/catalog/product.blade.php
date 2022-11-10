@@ -47,10 +47,11 @@
                                     @foreach($images as $image)
                                         <div class="slider-product__slide swiper-slide">
                                             <a class="slider-product__link"
-                                               href="{{ \Fanky\Admin\Models\ProductImage::UPLOAD_URL . $image->image }}"
+{{--                                               href="{{ \Fanky\Admin\Models\ProductImage::UPLOAD_URL . $image->image }}"--}}
+                                               href="{{ $image->thumb(3) }}"
                                                data-fancybox="gallery">
                                                 <img class="slider-product__picture swiper-lazy" src="/"
-                                                     data-src="{{ \Fanky\Admin\Models\ProductImage::UPLOAD_URL . $image->image }}"
+                                                     data-src="{{ $image->thumb(3) }}"
                                                      alt="alt" width="586" height="386">
                                             </a>
                                         </div>
@@ -58,10 +59,10 @@
                                 @else
                                     <div class="slider-product__slide swiper-slide">
                                         <a class="slider-product__link"
-                                           href="{{ \Fanky\Admin\Models\Catalog::UPLOAD_URL . $cat_image }}"
+                                           href="{{ $product->getRootImage() }}"
                                            data-fancybox="gallery">
                                             <img class="slider-product__picture swiper-lazy" src="/"
-                                                 data-src="{{ \Fanky\Admin\Models\Catalog::UPLOAD_URL . $cat_image }}"
+                                                 data-src="{{ $product->getRootImage() }}"
                                                  alt="alt" width="586" height="386">
                                         </a>
                                     </div>
@@ -118,7 +119,7 @@
                                         <span>63 686,71 руб.</span>
                                     </div>
                                     <div class="product-data__add">
-                                        <button class="btn btn--content" type="button">
+                                        <button class="btn btn--content" data-product-id="{{ $product->id }}" type="button">
                                             <span>Добавить в корзину</span>
                                         </button>
                                     </div>
@@ -216,7 +217,7 @@
                                 <li class="related-products__item">
                                     <a class="related-products__link" href="{{ $item->url }}" title="{{ $item->name }}"
                                        target="_blank">{{ $item->name }}</a>
-                                    <span>{{ number_format($product->multiplyPrice($product->price), 0, ' ', ' ') }} ₽</span>
+                                    <span>{{ number_format($product->multiplyPrice($item->price), 0, ' ', ' ') }} ₽</span>
                                 </li>
                             @endforeach
                         </ul>

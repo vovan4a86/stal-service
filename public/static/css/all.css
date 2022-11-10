@@ -3503,9 +3503,6 @@ button.swiper-pagination-bullet {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
   height: 100%;
   background-color: var(--white);
   outline: 1px solid var(--white);
@@ -3518,9 +3515,9 @@ button.swiper-pagination-bullet {
 .sublink__picture {
   display: inline-block;
   -webkit-box-flex: 0;
-  -ms-flex: 0 0 64;
-  flex: 0 0 64;
-  width: 64px;
+  -ms-flex: 0 0 50;
+  flex: 0 0 50;
+  width: 50px;
   height: 34px;
   -o-object-fit: contain;
   object-fit: contain;
@@ -3536,8 +3533,8 @@ button.swiper-pagination-bullet {
 
 .sublink__title {
   margin-left: 10px;
-  font-weight: 700;
-  font-size: calc(14px + 0.1041666667vw);
+  font-weight: 600;
+  font-size: 14px;
   line-height: 1.25;
   color: var(--accent);
   -webkit-transition: color var(--transition);
@@ -4611,6 +4608,7 @@ button.swiper-pagination-bullet {
 .product__view {
   grid-column: span 5;
   background-color: #d9d9d9;
+  overflow: hidden;
 }
 
 .product__info {
@@ -8225,7 +8223,7 @@ button.swiper-pagination-bullet {
 
 .section__title {
   font-weight: 900;
-  font-size: calc(24px + 0.7291666667vw);
+  font-size: calc(18px + 1.0416666667vw);
   line-height: 1.3;
 }
 

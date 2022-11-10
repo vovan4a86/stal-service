@@ -1,3 +1,4 @@
+//кнопка добавить в корзину
 $('button.card__cart').on('click', function (e) {
     if($(this).is('.btn--added')) return;
     const id = $(this).data('product-id');
@@ -8,6 +9,29 @@ $('button.card__cart').on('click', function (e) {
         // $(this).text('Добавлено');
     }.bind(this));
 });
+//кнопка добавить в корзину в продукте
+$('.product-data__add button').on('click', function (e) {
+    // if($(this).is('.btn--added')) return;
+    const id = $(this).data('product-id');
+    Cart.add(id, 1, function (res) {
+        $('.header__cart').replaceWith(res.header_cart);
+        $('#cart-dialog').html(res.popup);
+        $(this).addClass('btn--added');
+        // $(this).text('Добавлено');
+    }.bind(this));
+});
+//кнопка Купить
+$('.card__actions button.btn').on('click', function (e) {
+    const id = $(this).data('product-id');
+    Cart.add(id, 1, function (res) {
+        $('.header__cart').replaceWith(res.header_cart);
+        $('#cart-dialog').html(res.popup);
+        $(this).addClass('btn--added');
+        // $(this).text('Добавлено');
+    }.bind(this));
+    document.location.href = '/cart';
+});
+
 $('button.catalog-list__add').on('click', function (e) {
     if($(this).is('.btn--added')) return;
     const id = $(this).data('product-id');
@@ -130,6 +154,20 @@ function moreNews(el) {
         }
         if (typeof json.next_news_count !== 'undefined' && json.next_count > 0) {
             $more_lnk.data('url', json.next_page);
+        }
+    });
+}
+
+function moreSearchItems(el) {
+    var url = $(el).data('url');
+    var $more_lnk = $('.section__loader button');
+    sendAjax(url, {}, function (json) {
+        if (typeof json.paginate !== 'undefined') {
+            //передаем обновленное значение "Загрузить еще"
+            $('.section__loader').html(json.paginate);
+        }
+        if (typeof json.items !== 'undefined') {
+            $('.search-page__list').append(json.items);
         }
     });
 }
@@ -385,51 +423,34 @@ function setView(el, view) {
     })
 }
 
-// function updateFilter(select, e) {
-//     e.preventDefault();
-//     let name = select.name;
-//     let list = $('.catalog-list__products');
-//     let container = $('.catalog__container');
-//     let paginate = $('.catalog-list__footer .pagination');
-//
-//     let data = null;
-//     let url = null;
-//     if(name === 'column1') {
-//         data = $('#filter_form1').serialize();
-//         url = $('#filter_form1').attr('action')
-//     } else {
-//         data = $('#filter_form2').serialize();
-//         url = $('#filter_form2').attr('action')
-//     }
-//     console.log(data);
-//     sendAjax(url, data, function (json) {
-//         if(json.success == true) {
-//             console.log('success');
-//         }
-//         if(json.list !== 'undefined') {
-//             console.log(json.list);
-//             list.empty();
-//             // container.append(json.list);
-//             for (let elem in json.list) {
-//                 list.append(json.list[elem]);
-//             }
-//         }
-//         // if(json.paginate !== 'undefined') {
-//         //     paginate.empty();
-//         //     paginate.append(json.paginate);
-//         // }
-//     });
-//
-// }
-
 function updateFilter() {
     // $('#filter_form').submit();
 }
 
-// $('button.cart-control--edit').on('click', function (e) {
-//     const id = $(this).data('edit-order');
-//     console.log(id);
-// })
+$('button.cart-control--edit').on('click', function (e) {
+    const id = $(this).data('edit-order');
+    console.log(id);
+})
 
+function submitFilter() {
+    $('#filter_form').submit();
+}
 
+function filterApply(elem, e) {
+    e.preventDefault();
+    let url = $(elem).attr('action');
+    var data = $(elem).serialize();
+
+    sendAjax(url, data, function (json) {
+        if (typeof json.items !== 'undefined') {
+            $('.catalog-list__products').html(json.items);
+        }
+        if (typeof json.paginate !== 'undefined') {
+            $('.pagination').html(json.paginate);
+        }
+        // if (typeof json.perpage !== 'undefined') {
+        //     $('.catalog-list__footer form').html(json.perpage);
+        // }
+    })
+}
 

@@ -19,11 +19,13 @@
                                     <div class="sale__card">
                                     <!-- card-->
                                     <div class="card swiper-slide">
-                                        <div class="card__badge">%</div>
+                                        @if($prod->is_action)
+                                            <div class="card__badge">%</div>
+                                        @endif
                                         <a class="card__preview" href="{{ $prod->url }}" title="{{ $prod->name }}">
                                             <img class="card__picture lazy" src="{{ $prod->url }}"
                                                  data-src="{{ $prod->showCategoryImage($prod->catalog_id) }}" width="200" height="130"
-                                                 alt="Арматура 12 11.7м А500 34028-16" />
+                                                 alt="{{ $prod->name }}" />
                                         </a>
                                         <div class="card__status">
                                             @if($prod->in_stock)
@@ -45,16 +47,7 @@
                                             <span class="price-card__value">{{ $prod->price }} ₽</span>
                                             <span class="price-card__counts">/ {{ $prod->measure }}</span>
                                         </div>
-                                        <div class="card__actions">
-                                            <button class="btn" type="button" aria-label="Купить">
-                                                <span>Купить</span>
-                                            </button>
-                                            <button class="card__cart" type="button" aria-label="Добавить в корзину">
-                                                <svg class="svg-sprite-icon icon-cart">
-                                                    <use xlink:href="/static/images/sprite/symbol/sprite.svg#cart"></use>
-                                                </svg>
-                                            </button>
-                                        </div>
+                                            @include('cart.card_actions')
                                     </div>
                                 </div>
                                 @endforeach

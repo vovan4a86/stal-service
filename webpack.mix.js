@@ -14,8 +14,12 @@ mix.sourcemaps = false;
 mix.browserSync({
     proxy: 'stal-service.test'
 });
-mix.scripts([
-        'resources/assets/js/main.js',
+mix.js([
+        '/resources/assets/js--sources/main.js',
+        // 'resources/assets/js/custom.js',
+    ], 'public/static/js/main.js')
+    .scripts([
+        'public/static/js/main.js',
         'resources/assets/js/custom.js',
     ], 'public/static/js/all.js')
     .styles([

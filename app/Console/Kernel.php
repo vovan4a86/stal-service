@@ -17,6 +17,9 @@ class Kernel extends ConsoleKernel {
 		'App\Console\Commands\Inspire',
 		'App\Console\Commands\Test',
         'App\Console\Commands\ParseAllProducts',
+        'App\Console\Commands\ParseProfnastil',
+        'App\Console\Commands\ParseTruba',
+        'App\Console\Commands\ParseList',
 		Commands\ImportOld::class,
 	];
 

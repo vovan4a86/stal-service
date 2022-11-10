@@ -77,15 +77,16 @@
                 @if ($product->id)
                     <div class="form-group">
                         <label class="btn btn-success">
-                            <input id="offer_imag_upload" type="file" multiple data-url="{{ route('admin.catalog.productImageUpload', $product->id) }}"
+                            <input id="offer_imag_upload" type="file" multiple
+                                   data-url="{{ route('admin.catalog.productImageUpload', $product->id) }}"
                                    style="display:none;" onchange="productImageUpload(this, event)">
                             Загрузить изображения
                         </label>
                     </div>
-                    <p>Размер изображения: 492x302</p>
+                    <p>Размер изображения: 586x386</p>
 
                     <div class="images_list">
-                        @foreach ($product->images()->orderBy('order')->get() as $image)
+                        @foreach ($product->images()->get() as $image)
                             @include('admin::catalog.product_image', ['image' => $image, 'active' => $product->image])
                         @endforeach
                     </div>

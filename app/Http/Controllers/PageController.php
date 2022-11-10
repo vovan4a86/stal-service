@@ -3,7 +3,11 @@
 use App;
 use Fanky\Admin\Models\Catalog;
 use Fanky\Admin\Models\Page;
+use Fanky\Admin\Models\Product;
+use Fanky\Admin\Models\SearchIndex;
+use Fanky\Admin\Settings;
 use SEOMeta;
+use Request;
 
 class PageController extends Controller {
 
@@ -42,7 +46,47 @@ class PageController extends Controller {
 		]);
 	}
 
-	public function robots() {
+    public function search() {
+        \View::share('canonical', route('search'));
+        $q = Request::get('q', '');
+
+        if (!$q) {
+            $items_ids = [];
+        } else {
+            $items_ids = SearchIndex::orWhere('name', 'LIKE', '%' . $q . '%')
+                ->orderByDesc('updated_at')
+                ->pluck('product_id')->all();
+        }
+        $items = Product::whereIn('id', $items_ids)
+            ->paginate(12)
+            ->appends(['q' => $q]); //Добавить параметры в строку запроса можно через метод appends().
+
+        if (Request::ajax()) {
+            $view_items = [];
+            foreach ($items as $item) {
+                $view_items[] = view('search.search_item', [
+                                            'item' => $item,
+                                ])->render();
+            }
+
+            return response()->json([
+                'items'      => $view_items,
+                'paginate'   => view('search.ajax_pagination', [
+                                            'paginator' => $items
+                                ])->render()
+            ]);
+        }
+
+        return view('search.index', [
+            'items'       => $items,
+            'title'       => 'Результат поиска «' . $q . '»',
+            'name'        => 'Поиск ' . $q,
+            'keywords'    => 'Поиск ',
+            'description' => 'Поиск ',
+        ]);
+    }
+
+    public function robots() {
 		$robots = new App\Robots();
 		if (App::isLocal()) {
 			$robots->addUserAgent('*');

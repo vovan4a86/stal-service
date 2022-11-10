@@ -32,6 +32,7 @@ const orderEdit = () => {
           popupLength.value = orderLength;
           popupPrice.value = orderPrice;
 
+
           popupSummary.textContent = calculate(orderPrice, orderCount);
           popupTotal.value = calculate(orderPrice, orderCount);
         }

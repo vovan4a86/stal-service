@@ -1,7 +1,9 @@
 <div class="catalog-list__card">
     <!-- card-->
     <div class="card swiper-slide">
-        <div class="card__badge">%</div>
+        @if($item->is_action)
+            <div class="card__badge">%</div>
+        @endif
         <a class="card__preview" href="{{ $item->url }}" title="Арматура 12 11.7м А500 34028-16">
             <img class="card__picture lazy entered loaded" src="/static/images/common/cat-7.png"
                  data-src="/static/images/common/cat-7.png" width="200" height="130" alt="Арматура 12 11.7м А500 34028-16">
@@ -23,15 +25,6 @@
             <span class="price-card__value">400 ₽</span>
             <span class="price-card__counts">/ шт.</span>
         </div>
-        <div class="card__actions">
-            <button class="btn" type="button" aria-label="Купить">
-                <span>Купить</span>
-            </button>
-            <button class="card__cart" type="button" aria-label="Добавить в корзину">
-                <svg class="svg-sprite-icon icon-cart">
-                    <use xlink:href="/static/images/sprite/symbol/sprite.svg#cart"></use>
-                </svg>
-            </button>
-        </div>
+            @include('cart.card_actions')
     </div>
 </div>

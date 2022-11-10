@@ -9,7 +9,7 @@
 <div class="container cities-page__container data-cur_url="{{ $curUrl }}">
 <div class="cities-page__title">Выберите регион:</div>
 <div class="cities-page__current">
-    <span class="cities-page__link">Россия</span>
+    <a class="cities-page__link" href="{{ route('default', ['contacts']) }}" }}>Россия</a>
 </div>
 <div class="cities-page__content">
     @foreach($cities as $letter => $letterCities)

@@ -1,13 +1,12 @@
 <div class="popup-order popup popup--order" id="edit-order" style="display: none">
     <div class="popup-order__head">
         <div class="popup-order__title" data-popup-title></div>
-        <div class="popup-order__status">
+        <div class="popup-order__status" data-popup-status>
             <div class="product-status product-status--instock">
                 В наличии
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8.4375 2.81274L4.0625 7.18755L1.875 5.00024" stroke="#52AA52" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-
             </div>
         </div>
         <div class="popup-order__price">Цена
@@ -17,7 +16,7 @@
     <div class="popup-order__fields">
         <div class="popup-order__field">
             <label class="popup-order__label">Длина, м
-                <input class="popup-order__input" type="number" name="length" value="5" required data-popup-length>
+                <input class="popup-order__input" type="number" name="length" value="5" disabled required data-popup-length>
             </label>
         </div>
         <div class="popup-order__field">

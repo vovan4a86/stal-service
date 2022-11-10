@@ -255,7 +255,9 @@ class AdminCatalogController extends AdminController {
                 $arr['add_param_id'] = $param->param_id;
                 $arr['value'] = Request::get($param->alias);
 
-                $par->update($arr);
+                if($par) {
+                    $par->update($arr);
+                }
             }
         }
 

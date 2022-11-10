@@ -28,9 +28,9 @@
                                     class="fa fa-fw fa-sitemap" title="Обновить sitemap.xml"></i></a></li>
                     <li><a href="{{ route('admin.pages',['clear_cache' => 1]) }}" title="Очистить кеш"><i
                                     class="fa fa-fw fa-refresh" title="Очистить кеш"></i></a></li>
-                    {{--<li>--}}
-                        {{--<a href="{{ route('admin.pages',['update_search' => 1]) }}" title="Обновить поисковый индекс"><i class="fa fa-fw" title="Обновить поисковый индекс">S</i></a>--}}
-                    {{--</li>--}}
+{{--                    <li>--}}
+{{--                        <a href="{{ route('admin.pages',['update_search' => 1]) }}" title="Обновить поисковый индекс"><i class="fa fa-fw" title="Обновить поисковый индекс">S</i></a>--}}
+{{--                    </li>--}}
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <!--<img src="/adminlte/dist/img/user2-160x160.jpg" class="user-image" alt="User Image"/>-->

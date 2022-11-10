@@ -10,7 +10,9 @@
                 </svg>
                 <span>Показать фильтр</span>
             </div>
-            <form action="" id="filter_form">
+{{--            <form action="{{ route('ajax.filter-apply') }}" id="filter_form" onsubmit="filterApply(this, event)">--}}
+            <form action="{{ $category->url }}" id="filter_form" onsubmit="filterApply(this, event)">
+                <input type="hidden" name="category_id" value="{{ $category->id }}">
                 <div class="catalog-list__hidden" data-filter-content>
                     <div class="catalog-list__grid catalog-list__grid--filters">
 
@@ -22,13 +24,12 @@
                         </div>
                         @if(count($filters))
                             @foreach($filters as $filter)
-                                <input type="hidden" name="category_id" value="{{ $category->id }}">
-                                <input type="hidden" name="filter_name" value="{{ $filter->alias }}">
+                                <input type="hidden" name="filter_name{{$loop->iteration}}" value="{{ $filter->alias }}">
                                 <div class="catalog-list__column catalog-list__column--one catalog-list__column--filter">
                                     <!-- https://slimselectjs.com/options-->
                                     <!-- js--sources/modules/select.js-->
-                                    <select class="catalog-select" name="column{{ $loop->iteration }}" multiple
-                                            onchange="updateFilter(this, event)">
+                                    <select class="catalog-select" name="column{{ $loop->iteration }}[]" multiple
+                                            onchange="submitFilter()">
                                         <option data-placeholder="true">{{ $filter->title }}</option>
                                         @if($sort)
                                             @foreach($sort[$filter->alias] as $value)
@@ -56,9 +57,7 @@
         @endif
     </div>
     <div class="catalog-list__footer">
-        <nav class="pagination">
-            {{ $items->links('catalog.page_nav') }}
-        </nav>
+        @include('catalog.list_pagination')
         @include('catalog.views.per_page')
     </div>
 </div>

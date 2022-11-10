@@ -118,6 +118,7 @@
                                                                 data-price="{{ \Fanky\Admin\Models\Product::fullPrice($item['price']) }}"
                                                                 data-count="{{ $item['count'] }}"
                                                                 data-length="{{ $item['length'] }}"
+                                                                data-instock="{{ $item['in_stock'] }}"
                                                                 data-src="#edit-order" aria-label="Изменить">
                                                             <svg class="svg-sprite-icon icon-pencil">
                                                                 <use xlink:href="static/images/sprite/symbol/sprite.svg#pencil"></use>

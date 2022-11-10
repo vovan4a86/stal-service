@@ -7,37 +7,38 @@ use Fanky\Admin\Models\Feedback;
 use Fanky\Admin\Models\Order as Order;
 use Fanky\Admin\Models\Page;
 use Fanky\Admin\Models\Product;
+use Fanky\Admin\Models\ProductParam;
 use Fanky\Admin\Models\Setting;
 use Illuminate\Http\Request;
 use Mail;
 use Mailer;
+
 //use Settings;
 use Cart;
 use Session;
 use SiteHelper;
 use Validator;
 
-class AjaxController extends Controller {
-	private $fromMail = 'info@stalservis96.ru';
-	private $fromName = 'Stal-Service';
+class AjaxController extends Controller
+{
+    private $fromMail = 'info@stalservis96.ru';
+    private $fromName = 'Stal-Service';
 
     //РАБОТА С КОРЗИНОЙ
 
-    public function postAddToCart(Request $request) {
+    public function postAddToCart(Request $request)
+    {
         $id = $request->get('id');
         $count = $request->get('count', 1);
         /** @var Product $product */
         $product = Product::find($id);
-        if($product) {
+        if ($product) {
 
             $image = $product->image;
             $product_item = $product->toArray();
             $product_item['count'] = $count;
             $product_item['url'] = $product->url;
             $product_item['image'] = $image ? $image->thumb(2) : null;
-
-
-            \Debugbar::log($product_item['image']);
 
             Cart::add($product_item);
         }
@@ -47,12 +48,13 @@ class AjaxController extends Controller {
         return ['header_cart' => $header_cart, 'popup' => $popup];
     }
 
-    public function postEditCartProduct(Request $request) {
+    public function postEditCartProduct(Request $request)
+    {
         $id = $request->get('id');
         $count = $request->get('count', 1);
         /** @var Product $product */
         $product = Product::find($id);
-        if($product) {
+        if ($product) {
             $image = $product->image;
             $product_item = $product->toArray();
             $product_item['count'] = $count;
@@ -67,7 +69,8 @@ class AjaxController extends Controller {
         return ['cart_popup' => $popup];
     }
 
-    public function postUpdateToCart(Request $request) {
+    public function postUpdateToCart(Request $request)
+    {
         $id = $request->get('id');
         $count = $request->get('count', 1);
         Cart::updateCount($id, $count);
@@ -77,19 +80,21 @@ class AjaxController extends Controller {
         return ['header_cart' => $header_cart];
     }
 
-    public function postRemoveFromCart(Request $request) {
+    public function postRemoveFromCart(Request $request)
+    {
         $id = $request->get('id');
         Cart::remove($id);
 
         $sum = Cart::sum();
 
         $header_cart = view('blocks.header_cart')->render();
-        $cart_values = view('blocks.cart_values', ['sum' => $sum ])->render();
+        $cart_values = view('blocks.cart_values', ['sum' => $sum])->render();
 
         return ['header_cart' => $header_cart, 'cart_values' => $cart_values];
     }
 
-    public function postPurgeCart() {
+    public function postPurgeCart()
+    {
         Cart::purge();
 
 //        $header_cart = view('cart.index', ['items' => []])->render();
@@ -98,16 +103,17 @@ class AjaxController extends Controller {
     }
 
     //заявка в свободной форме
-    public function postRequest() {
+    public function postRequest()
+    {
         $data = Request::only(['name', 'phone', 'email', 'text']);
         $valid = Validator::make($data, [
-            'name'  => 'required',
+            'name' => 'required',
             'phone' => 'required',
-            'text'  => 'required'
+            'text' => 'required'
         ], [
-            'name.required'  => 'Не заполнено поле Имя',
+            'name.required' => 'Не заполнено поле Имя',
             'phone.required' => 'Не заполнено поле Телефон',
-            'text.required'  => 'Не заполнено поле Сообщение',
+            'text.required' => 'Не заполнено поле Сообщение',
         ]);
 
         if ($valid->fails()) {
@@ -130,13 +136,14 @@ class AjaxController extends Controller {
     }
 
     //написать нам
-    public function postWriteback() {
+    public function postWriteback()
+    {
         $data = Request::only(['name', 'phone', 'text']);
         $valid = Validator::make($data, [
-            'name'  => 'required',
+            'name' => 'required',
             'phone' => 'required',
         ], [
-            'name.required'  => 'Не заполнено поле Имя',
+            'name.required' => 'Не заполнено поле Имя',
             'phone.required' => 'Не заполнено поле Телефон',
         ]);
 
@@ -160,13 +167,14 @@ class AjaxController extends Controller {
     }
 
     //заказать звонок
-    public function postCallback() {
+    public function postCallback()
+    {
         $data = Request::only(['name', 'phone', 'time']);
         $valid = Validator::make($data, [
-            'name'  => 'required',
+            'name' => 'required',
             'phone' => 'required',
         ], [
-            'name.required'  => 'Не заполнено поле Имя',
+            'name.required' => 'Не заполнено поле Имя',
             'phone.required' => 'Не заполнено поле Телефон',
         ]);
 
@@ -190,7 +198,8 @@ class AjaxController extends Controller {
     }
 
     //быстрый заказ
-    public function postFastRequest() {
+    public function postFastRequest()
+    {
         $data = Request::only(['name', 'phone']);
         $valid = Validator::make($data, [
             'name' => 'required',
@@ -220,7 +229,8 @@ class AjaxController extends Controller {
     }
 
     //остались вопросы?
-    public function postQuestions() {
+    public function postQuestions()
+    {
         $data = Request::only(['phone']);
         $valid = Validator::make($data, [
             'phone' => 'required',
@@ -248,16 +258,17 @@ class AjaxController extends Controller {
     }
 
     //заявка в свободной форме
-    public function postContactUs() {
+    public function postContactUs()
+    {
         $data = Request::only(['name', 'phone', 'text']);
         $valid = Validator::make($data, [
-            'name'  => 'required',
+            'name' => 'required',
             'phone' => 'required',
-            'text'  => 'required'
+            'text' => 'required'
         ], [
-            'name.required'  => 'Не заполнено поле Имя',
+            'name.required' => 'Не заполнено поле Имя',
             'phone.required' => 'Не заполнено поле Телефон',
-            'text.required'  => 'Не заполнено поле Сообщение',
+            'text.required' => 'Не заполнено поле Сообщение',
         ]);
 
         if ($valid->fails()) {
@@ -280,7 +291,8 @@ class AjaxController extends Controller {
     }
 
     //ОФОРМЛЕНИЕ ЗАКАЗА
-    public function postOrder(Request $request) {
+    public function postOrder(Request $request)
+    {
         $data = $request->only([
             'name',
             'phone',
@@ -298,10 +310,10 @@ class AjaxController extends Controller {
         $file = $data['file'] = Request::file('file');
 
         $messages = array(
-            'email.required'           => 'Не указан ваш e-mail адрес!',
-            'email.email'              => 'Не корректный e-mail адрес!',
-            'name.required'            => 'Не заполнено поле Имя',
-            'phone.required'           => 'Не заполнено поле Телефон',
+            'email.required' => 'Не указан ваш e-mail адрес!',
+            'email.email' => 'Не корректный e-mail адрес!',
+            'name.required' => 'Не заполнено поле Имя',
+            'phone.required' => 'Не заполнено поле Телефон',
             'delivery_method.required' => 'Не выбран способ доставки',
 //            'payment_method.required'  => 'Не выбран способ оплаты',
         );
@@ -313,14 +325,14 @@ class AjaxController extends Controller {
             'inn' => 'required_if:user,0',
             'company' => 'required_if:user,0',
             'delivery_method' => 'required',
-			'summ'     => 'required|min:1',
+            'summ' => 'required|min:1',
             'address' => 'required_if:delivery_method,0',
-            'file'    => 'nullable|max:5120|mimes:jpg,jpeg,png,pdf,doc,docs,xls,xlsx',
-		], $messages);
-        if($valid->fails()){
+            'file' => 'nullable|max:5120|mimes:jpg,jpeg,png,pdf,doc,docs,xls,xlsx',
+        ], $messages);
+        if ($valid->fails()) {
             return ['errors' => $valid->messages()];
         }
-        if($file) {
+        if ($file) {
             $file_name = md5(uniqid(rand(), true)) . '.' . $file->getClientOriginalExtension();
             $file->move(base_path() . Order::UPLOAD_PATH, $file_name);
             $data['file'] = $file_name;
@@ -375,18 +387,19 @@ class AjaxController extends Controller {
     }
 
     //РАБОТА С ГОРОДАМИ
-    public function postSetCity() {
+    public function postSetCity()
+    {
         $city_id = Request::get('city_id');
         $city = City::find($city_id);
         session(['change_city' => true]);
-        if($city) {
+        if ($city) {
             $result = [
                 'success' => true,
             ];
             session(['city_alias' => $city->alias]);
 
             return response(json_encode($result))->withCookie(cookie('city_id', $city->id));
-        } elseif($city_id == 0) {
+        } elseif ($city_id == 0) {
             $result = [
                 'success' => true,
             ];
@@ -398,24 +411,25 @@ class AjaxController extends Controller {
         return ['success' => false, 'msg' => 'Город не найден'];
     }
 
-    public function postGetCorrectRegionLink() {
+    public function postGetCorrectRegionLink()
+    {
         $city_id = Request::get('city_id');
         $city = City::find($city_id);
         $cur_url = Request::get('cur_url');
 
-        if($cur_url != '/') {
+        if ($cur_url != '/') {
             $url = $cur_url;
             $path = explode('/', $cur_url);
             $cities = getCityAliases();
             /* проверяем - региональная ссылка или федеральная */
-            if(in_array($path[0], $cities)) {
-                if($city) {
+            if (in_array($path[0], $cities)) {
+                if ($city) {
                     $path[0] = $city->alias;
                 } else {
                     array_shift($path);
                 }
             } else {
-                if($city && !in_array($path[0], Page::$excludeRegionAlias)) {
+                if ($city && !in_array($path[0], Page::$excludeRegionAlias)) {
                     array_unshift($path, $city->alias);
                 }
             }
@@ -432,12 +446,13 @@ class AjaxController extends Controller {
         return ['redirect' => $url];
     }
 
-    public function showCitiesPopup() {
+    public function showCitiesPopup()
+    {
         $cities = City::query()->orderBy('name')
             ->get(['id', 'alias', 'name', DB::raw('LEFT(name,1) as letter')]);
         $citiesArr = [];
-        if(count($cities)) {
-            foreach($cities as $city) {
+        if (count($cities)) {
+            foreach ($cities as $city) {
                 $citiesArr[$city->letter][] = $city; //Группировка по первой букве
             }
         }
@@ -460,7 +475,8 @@ class AjaxController extends Controller {
         ]);
     }
 
-    public function search(Request $request) {
+    public function search(Request $request)
+    {
         $data = $request->only(['search']);
 
         $items = null;
@@ -484,11 +500,12 @@ class AjaxController extends Controller {
 
     }
 
-    public function changeProductsPerPage(Request $request) {
+    public function changeProductsPerPage(Request $request)
+    {
         $count = $request->only('num');
 
         $setting = Setting::find(9);
-        if($setting) {
+        if ($setting) {
             $setting->value = $count['num'];
             $setting->save();
             return ['result' => true];
@@ -497,14 +514,16 @@ class AjaxController extends Controller {
         }
     }
 
-    public function postSetView($view) {
-        $view = $view == 'list' ? 'list': 'grid';
+    public function postSetView($view)
+    {
+        $view = $view == 'list' ? 'list' : 'grid';
         session(['catalog_view' => $view]);
 
         return ['success' => true];
     }
 
-    public function postUpdateFilter(Request $request) {
+    public function postUpdateFilter(Request $request)
+    {
         $column1 = $request->only('column1');
         $column2 = $request->get('column2');
         $category_id = $request->get('category_id');
@@ -517,7 +536,7 @@ class AjaxController extends Controller {
 
         $category = Catalog::find($category_id)->first();
 
-        if($category->parent_id !== 0) {
+        if ($category->parent_id !== 0) {
             $root = $category->findRootCategory($category->parent_id);
         } else {
             $root = $category;
@@ -536,7 +555,7 @@ class AjaxController extends Controller {
         $filters = $root->filters()->get();
         $sort = [];
         foreach ($filters as $filter) {
-            if($ids) {
+            if ($ids) {
                 $sort[$filter->alias] = Product::public()->whereIn('catalog_id', $ids)
                     ->orderBy($filter->alias, 'asc')
                     ->groupBy($filter->alias)
@@ -576,4 +595,57 @@ class AjaxController extends Controller {
         return ['success' => true, 'list' => $list];
 
     }
+
+//    public function postFilterApply(Request $request) {
+//
+//        $column1 = $request->only('column1');
+//        $column2 = $request->only('column2');
+//        $filter_name1 = $request->get('filter_name1');
+//        $filter_name2 = $request->get('filter_name2');
+//
+//        $queries = [];
+//        if (count($column1)) {
+//            foreach ($column1 as $name => $values) {
+//                foreach ($values as $value) {
+//                    $queries[$filter_name1][] = [$value];
+//                }
+//            }
+//        }
+//
+//        if (count($column2)) {
+//            foreach ($column2 as $name => $values) {
+//                foreach ($values as $value) {
+//                    $queries[$filter_name2][] = [$value];
+//                }
+//            }
+//        }
+//
+//        $prods = []; //все найденные id продуктов
+//        foreach ($queries as $name => $values) {
+//            foreach ($values as $value) {
+//                $prods[] = Product::where($name, $value)->get();
+//            }
+//        }
+//
+//        $products = [];
+//        foreach ($prods as $items) {
+//            foreach ($items as $item) {
+//                $products[] = $item;
+//            }
+//        }
+//        \Debugbar::log($products);
+//
+//        $view_items = [];
+//        foreach ($items as $item) {
+//            //добавляем новые элементы
+//            $view_items[] = view('catalog.list_row', [
+//                'item' => $item,
+//            ])->render();
+//        }
+//
+//        return response()->json([
+//            'items' => $view_items,
+//            'paginate' => view('paginations.news_links_limit', ['paginator' => $items])->render()
+//        ]);
+//    }
 }

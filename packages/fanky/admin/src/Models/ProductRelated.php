@@ -43,6 +43,4 @@ class ProductRelated extends Model {
 		return $this->params()
 			->where('on_card', '=', 1);
 	}
-
-
 }

@@ -113,11 +113,30 @@ class Product extends Model {
     }
 
     public function images(): HasMany {
-        return $this->hasMany(ProductImage::class, 'product_id');
+        return $this->hasMany(ProductImage::class, 'product_id')
+            ->orderBy('order');
     }
 
     public function image(): HasOne {
-        return $this->hasOne(ProductImage::class)->orderBy('order');
+        return $this->hasOne(ProductImage::class)
+            ->orderBy('order');
+    }
+
+    public function getImage($img) {
+        return \Fanky\Admin\Models\ProductImage::UPLOAD_URL . $img;
+    }
+
+    public function getRootImage() {
+        $category = Catalog::find($this->catalog_id);
+        $root = $category;
+        while($root->parent_id !== 0) {
+            $root = $root->findRootCategory($root->parent_id);
+        }
+        if($root->image) {
+            return \Fanky\Admin\Models\Catalog::UPLOAD_URL . $root->image;
+        } else {
+            return null;
+        }
     }
 
     public function params() {

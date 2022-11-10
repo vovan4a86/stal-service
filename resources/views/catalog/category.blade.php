@@ -9,14 +9,21 @@
                 <div class="catalog__text text-content">
                     {!! $category->announce !!}
                 </div>
-                @if($is_subcategory)
+                @if($category->parent_id !== 0)
                     <div class="catalog__links">
                         <nav class="subcategories">
                             <ul class="subcategories__list">
                                 <li class="subcategories__item">
-                                    <a class="subcategories__link" href="{{ $root->url }}"
-                                       title="Показать все">Показать все</a>
+                                    <a class="subcategories__link" href="{{ $root->url }}" title="Показать все">Показать все</a>
                                 </li>
+                                @if($children)
+                                    @foreach($children as $child)
+                                        <li class="subcategories__item">
+                                            <a class="subcategories__link"
+                                               href="{{ $child->url }}" title="{{ $child->name }}">{{ $child->name }}</a>
+                                        </li>
+                                    @endforeach
+                                @endif
                             </ul>
                         </nav>
                         <div class="catalog__update">

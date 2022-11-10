@@ -20,7 +20,7 @@ class ParseAllProducts extends Command {
      *
      * @var string
      */
-    protected $signature = 'parse';
+    protected $signature = 'parse:all';
     private $baseUrl = 'https://www.spk.ru';
     public $client;
     /**
@@ -81,6 +81,8 @@ class ParseAllProducts extends Command {
     }
 
     public function parseCategory($categoryName, $categoryUrl, $subcatname = null) {
+        $this->info('parse $categoryName: ' . $categoryName);
+        $this->info('parse $subcatname: ' . $subcatname);
         $this->info('parse url: ' . $categoryUrl);
         $res = $this->client->get($categoryUrl);
         $html = $res->getBody()->getContents();
@@ -88,7 +90,8 @@ class ParseAllProducts extends Command {
 
         $catalog = $this->getCatalogByName($categoryName);
 
-        $crawler->filter('.product-card__wrap_list-alt-wrap .product-card')->each(function (Crawler $node, $i) use ($catalog, $categoryName, $subcatname) {
+        $crawler->filter('.product-card__wrap_list-alt-wrap .product-card')
+            ->each(function (Crawler $node, $i) use ($catalog, $categoryName, $subcatname) {
             $name = trim($node->filter('a.product-card__title-link')->first()->text());
 
             if ($node->filter('.product__stock-in')->count()) {
@@ -119,7 +122,8 @@ class ParseAllProducts extends Command {
 
             $char_keys = [];
             $char_values = [];
-            $inner_crawler->filter('.product__char')->each(function (Crawler $node, $i) use (&$char_values, &$char_keys) {
+            $inner_crawler->filter('.product__char')
+                ->each(function (Crawler $node, $i) use (&$char_values, &$char_keys) {
                 $char_keys[$i] = trim($node->filter('.product__char-key')->first()->text());
                 $char_values[$i] = trim($node->filter('.product__char-val')->first()->text());
             });
@@ -131,6 +135,10 @@ class ParseAllProducts extends Command {
                 $sub_catalog = $this->getSubCatalogByName($subcatname, $catalog->id);
             }
 
+            $root = $catalog;
+            while($root->parent_id !== 0) {
+                $root = $root->findRootCategory($root->parent_id);
+            }
 
             $data = [];
             foreach ($char_keys as $i => $key) {
@@ -145,15 +153,15 @@ class ParseAllProducts extends Command {
                     CatalogParam::create([
                         'catalog_id' => $catalog->id,
                         'param_id' => $param->id,
-                        'order' => CatalogParam::where('catalog_id', '=', $catalog->id)->max('order') + 1,
+                        'order' => CatalogParam::where('catalog_id', '=', $root->id)->max('order') + 1,
                     ]);
                 } else {
-                    $used = CatalogParam::where('catalog_id', '=', $catalog->id)->pluck('param_id')->all();
+                    $used = CatalogParam::where('catalog_id', '=', $root->id)->pluck('param_id')->all();
                     if (!in_array($param->id, $used)) {
                         CatalogParam::create([
-                            'catalog_id' => $catalog->id,
+                            'catalog_id' => $root->id,
                             'param_id' => $param->id,
-                            'order' => CatalogParam::where('catalog_id', '=', $catalog->id)->max('order') + 1,
+                            'order' => CatalogParam::where('catalog_id', '=', $root->id)->max('order') + 1,
                         ]);
                     }
                 }
@@ -184,24 +192,34 @@ class ParseAllProducts extends Command {
         sleep(rand(1,2));
         if ($crawler->filter('a.pager__right')->count()) {
             $nextUrl = $this->baseUrl . $crawler->filter('a.pager__right')->first()->attr('href');
-            $this->parseCategory($categoryName, $nextUrl);
+            $this->parseCategory($categoryName, $nextUrl, $subcatname);
         }
     }
 
     public function parseProfnastil($categoryName, $categoryUrl) {
-        $this->info('parse url: ' . $categoryUrl);
+        $this->info('parseProfnastil url: ' . $categoryUrl);
         $res = $this->client->get($categoryUrl);
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
 
-//        $catalog = $this->getCatalogByName($categoryName);
+        $catalog = $this->getCatalogByName($categoryName);
 
-        $crawler->filter('.metal-tile__content-block')->each(function (Crawler $subcrawler) use ($categoryName) {
-//            $subname = $subcrawler->filter('.metal-tile-item__description a')->first()->text();
-//            $profSubCatalog = $this->getSubCatalogByName($subname, $catalog->id);
-            $subcaturl = $this->baseUrl . trim($subcrawler->filter('.metal-tile-item__description a')->first()->attr('href'));
+        $crawler->filter('.metal-tile__content-block')
+            ->each(function (Crawler $subcatnode, $i) use ($categoryName, $catalog) {
+            $name = trim($subcatnode->filter('.metal-tile-item__description a')->first()->text()); //ПРОФНАСТИЛ С8
+            $subcatalog = $this->getSubCatalogByName($name, $catalog->id);
+            $this->info('parse name: ' . $name);
 
-            $this->parseCategory($categoryName, $subcaturl);
+            $subcatnode->filter('.metal-tile-item-patameters__name')
+                ->each(function (Crawler $params, $i) use ($name, $subcatalog) {
+                $proffullname = $params->filter('.metal-tile-item-patameters__name a')->first()->text();
+                $profurl = $this->baseUrl . trim($params->filter('.metal-tile-item-patameters__name a')->first()->attr('href'));
+//                $profname = trim(str_ireplace($name, '', $proffullname));
+
+                $profsubcatalog = $this->getSubCatalogByName($proffullname, $subcatalog->id);
+
+                $this->parseCategory($proffullname, $profurl, $profsubcatalog->name);
+            });
         });
     }
 
@@ -211,11 +229,8 @@ class ParseAllProducts extends Command {
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
 
-//        $catalog = $this->getCatalogByName($categoryName);
-
         $crawler->filter('.metal-tile__content-block')->each(function (Crawler $subcrawler) use ($categoryName) {
             $subname = $subcrawler->filter('.metal-tile-item__description a')->first()->text();
-//            $profSubCatalog = $this->getSubCatalogByName($subname, $catalog->id);
             $subcaturl = $this->baseUrl . trim($subcrawler->filter('.metal-tile-item__description a')->first()->attr('href'));
 
             $this->parseCategory($categoryName, $subcaturl, $subname);

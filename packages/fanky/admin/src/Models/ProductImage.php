@@ -36,6 +36,7 @@ class ProductImage extends Model {
 
 	public static $thumbs = [
 		1 => '376x295', //admin product_list
-		2 => '359x', //product_page
+		2 => '112x61', //list_row
+		3 => '586x386', //product_page
 	];
 }

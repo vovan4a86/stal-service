@@ -25,12 +25,14 @@ class CartController extends Controller {
 			$product = Product::find($item['id']);
 			if ($product) {
                 $catalog = Catalog::find($product->catalog_id);
-                if($catalog->parent_id !== 0) {
-                    $root = $catalog->findRootCategory($catalog->parent_id);
-                } else {
-                    $root = $catalog;
+                $root = $catalog;
+                while($root->parent_id !== 0) {
+                    $root = $root->findRootCategory($root->parent_id);
                 }
-				$items[$key]['image'] = $product->image ? Product::UPLOAD_URL . $product->image : Catalog::UPLOAD_URL . $root->image;;
+
+                $images = $product->images()->get();
+				$items[$key]['image'] = count($images) ?
+                    Product::UPLOAD_URL . $images[0]->image : Catalog::UPLOAD_URL . $root->image;
 			} else {
 //				$items[$key]['image'] = '/images/broken.png';
 			}

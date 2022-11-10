@@ -25,7 +25,7 @@
                             @foreach($catalogTop as $item)
                                 <li class="nav-footer__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ItemList">
                                     <a class="nav-footer__link" href="{{ $item->url }}"
-                                       title="Профильная труба" itemprop="url">{{ $item->name }}</a>
+                                       title="{{ $item->name }}" itemprop="url">{{ $item->name }}</a>
                                     <meta itemprop="name" content="{{ $item->name }}">
                                 </li>
                             @endforeach
@@ -39,7 +39,7 @@
                         <ul class="nav-footer__list" itemprop="about" itemscope itemtype="https://schema.org/ItemList">
                             @foreach($aboutMenuFooter as $item)
                                 <li class="nav-footer__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ItemList">
-                                    <a class="nav-footer__link" href="{{ $item->alias }}"
+                                    <a class="nav-footer__link" href="/{{ $item->alias }}"
                                        title="{{ $item->name }}" itemprop="url">{{ $item->name }}</a>
                                     <meta itemprop="name" content="{{ $item->name }}">
                                 </li>

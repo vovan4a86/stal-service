@@ -1,5 +1,7 @@
 <div class="card swiper-slide">
-    <div class="card__badge">%</div>
+    @if($product->is_action)
+        <div class="card__badge">%</div>
+    @endif
     <a class="card__preview" href="{{ $product->url }}" title="{{ $product->name }}">
         @php
             $images = $product->images()->get();
@@ -36,15 +38,5 @@
         <span class="price-card__value">{{ $product->multiplyPrice($product->price) }} ₽</span>
         <span class="price-card__counts">/ {{ $product->measure }}</span>
     </div>
-    <div class="card__actions">
-        <button class="btn" type="button" aria-label="Купить">
-            <span>Купить</span>
-        </button>
-        <button class="card__cart @if($in_cart = $product->in_cart) btn--added @endif" type="button"
-                aria-label="Добавить в корзину" data-product-id="{{ $product->id }}">
-            <svg class="svg-sprite-icon icon-cart">
-                <use xlink:href="/static/images/sprite/symbol/sprite.svg#cart"></use>
-            </svg>
-        </button>
-    </div>
+   @include('cart.card_actions')
 </div>

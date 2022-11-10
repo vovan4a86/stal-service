@@ -38,12 +38,14 @@ Route::group(['prefix' => 'ajax', 'as' => 'ajax.'], function () {
     Route::post('get-correct-region-link', 'AjaxController@postGetCorrectRegionLink')->name('get-correct-region-link');
     Route::get('show-popup-cities', [AjaxController::class, 'showCitiesPopup'])
         ->name('show-popup-cities');
-    Route::get('search', [AjaxController::class, 'showCitiesPopup'])
-        ->name('search');
+//    Route::get('search', [AjaxController::class, 'showCitiesPopup'])
+//        ->name('search');
     Route::post('set-view/{view}', 'AjaxController@postSetView')
         ->name('set-view');
     Route::post('update-filter', 'AjaxController@postUpdateFilter')
         ->name('update-filter');
+    Route::post('filter-apply', 'AjaxController@postFilterApply')
+        ->name('filter-apply');
 });
 Route::group(['middleware' => ['redirects', 'regions']], function() {
 	Route::get('/', 'WelcomeController@index')
@@ -65,7 +67,9 @@ Route::group(['middleware' => ['redirects', 'regions']], function() {
             ->where('alias', '([A-Za-z0-9\-\/_]+)');
     });
 
-    Route::get('search', ['as' => 'search', 'uses' => 'SearchController@getIndex']);
+//    Route::get('search', ['as' => 'search', 'uses' => 'SearchController@getIndex']);
+    Route::any('search', ['as' => 'search', 'uses' => 'PageController@search']);
+
 
     Route::any('news', 'NewsController@index')
 		->name('news');

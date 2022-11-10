@@ -64,27 +64,39 @@ class CatalogController extends Controller {
         $children = $category->public_children;
         $category->setSeo();
 
+        $root = $category;
+        while($root->parent_id !== 0) {
+            $root = $root->findRootCategory($root->parent_id);
+        }
+
         $per_page = Request::get('pages');
         $per_page = is_numeric($per_page) ? $per_page : \Settings::get('product_per_page');
         $data['per_page'] = $per_page;
 
         $parentIds = Catalog::where('parent_id', '=', '0')->pluck('id')->all();
 
-        $ids = null;
-        if(in_array($category->id, $parentIds)) {
+        $ids = [];
+        if(count($children)) {
             $ids = $category->getRecurseChildrenIds();
-            $items = Product::public()->whereIn('catalog_id', $ids)
-                ->orderBy('name', 'asc')->paginate($per_page);
-            $is_subcategory = false;
         } else {
-            $items = $category->products()->paginate($per_page);
-            $is_subcategory = true;
+            $ids = $category->getRecurseChildrenIdsInner();
         }
-        if($category->parent_id !== 0) {
-            $root = $category->findRootCategory($category->parent_id);
-        } else {
-            $root = $category;
-        }
+
+        $items = Product::public()->whereIn('catalog_id', $ids)
+            ->orderBy('name')->paginate($per_page);
+
+//        $ids = null;
+//        if(in_array($category->id, $parentIds)) {
+//            $ids = $category->getRecurseChildrenIds();
+//            $items = Product::public()->whereIn('catalog_id', $ids)
+//                ->orderBy('name', 'asc')->paginate($per_page);
+//            $is_subcategory = false;
+//        } else {
+//            $items = $category->products()->paginate($per_page);
+//            $is_subcategory = true;
+//        }
+//        dd($is_subcategory);
+
 
         $filters = $root->filters()->get();
 
@@ -125,7 +137,7 @@ class CatalogController extends Controller {
             'root' => $root ?? null,
             'filters' => $filters,
             'sort' => $sort,
-            'is_subcategory' => $is_subcategory,
+            'is_subcategory' => $is_subcategory ?? null,
         ];
 
         $view = Session::get('catalog_view', 'list') == 'list' ?
@@ -142,18 +154,68 @@ class CatalogController extends Controller {
         ]);
 
         if (Request::ajax()) {
+            $column1 = Request::only('column1');
+            $column2 = Request::only('column2');
+            $filter_name1 = Request::get('filter_name1');
+            $filter_name2 = Request::get('filter_name2');
+
+            $queries = [];
+            if (count($column1)) {
+                foreach ($column1 as $name => $values) {
+                    foreach ($values as $value) {
+                        $queries[$filter_name1][] = [$value];
+                    }
+                }
+            }
+
+            if (count($column2)) {
+                foreach ($column2 as $name => $values) {
+                    foreach ($values as $value) {
+                        $queries[$filter_name2][] = [$value];
+                    }
+                }
+            }
+
+            if(count($queries)) {
+                $prods_id = []; //все найденные id продуктов
+                foreach ($queries as $name => $values) {
+                    foreach ($values as $value) {
+                        $prods_id[] = Product::where('catalog_id', $category->id)->where($name, $value)->pluck('id');
+                    }
+                }
+
+                $products_ids = [];
+                foreach ($prods_id as $items) {
+                    foreach ($items as $item) {
+                        $products_ids[] = $item;
+                    }
+                }
+                \Debugbar::log($products_ids);
+                $items = Product::whereIn('id', $products_ids)
+                    ->orderBy('name')->paginate($per_page);
+            }
             $view_items = [];
             foreach ($items as $item) {
-                //добавляем новые элементы
-                $view_items[] = view('news.list_item', [
+                $view_items[] = view('catalog.list_row', [
                     'item' => $item,
+                    'category' => $category,
+                    'sort' => $sort,
+                    'root' => $root,
+                    'filters' => $filters,
+                    'per_page' => $per_page
                 ])->render();
             }
 
-            return [
-                'items'      => $view_items,
-                'paginate' => view('paginations.news_links_limit', ['paginator' => $items])->render()
-            ];
+            return response()->json([
+                'items' => $view_items,
+                'paginate' => view('catalog.list_pagination', [
+                    'items' => $items,
+                ])->render(),
+//                'perpage' => view('catalog.views.per_page', [
+//                    'category' => $category,
+//                    'per_page' => $per_page
+//                ])->render()
+            ]);
         }
 
         return view('catalog.category', $data);
@@ -163,28 +225,35 @@ class CatalogController extends Controller {
         $bread = $product->getBread();
         $product = $this->add_region_seo($product);
         $product->setSeo();
-//        $params = $product->params()
-//            ->where('group', '!=', '')
-//            ->get()
-//            ->groupBy('group');
         $features = ProductIcon::orderBy('order', 'asc')->get();
-        $related = $product->related()->get();
 
         $catalog = Catalog::whereId($product->catalog_id)->first();
         $maincat = Catalog::where('id', '=', $catalog->parent_id)->first();
         $params = $maincat->params()->get();
-//        $add_params = AddParam::where('catalog_id', '=', $maincat->id)
-//            ->join('add_params', 'product_add_params.add_param_id', '=', 'add_params.id')
-//            ->get();
+
         $add_params = ProductAddParam::where('product_id', '=', $product->id)
             ->join('add_params', 'product_add_params.add_param_id', '=', 'add_params.id')
             ->groupBy('name')
             ->get();
 
-        $images = $product->images()->get();
-        if(!count($images)) {
-            $cat_image = $maincat->image;
+        $related = $product->related()->get(); //похожие товары добавленные из админки
+
+        //похожие товары, добавленные вручную + из той же подкатегории
+        $related_from_cat = Product::whereCatalogId($catalog->id)
+            ->where('id', '<>', $product->id)->get();
+
+        //если товаров в подкатегории нет => 10 случайных в категории
+        if(!count($related_from_cat)) {
+            $related_cat = $maincat->getAllPublicChildren()->pluck('id')->all();
+            //20 товаров из той же категории
+            $related_from_cat = Product::whereIn('catalog_id', $related_cat)
+                ->where('id', '<>', $product->id)->get()->random(10);
+//            $related = $related->merge($related_from_cat);
         }
+
+        $related = $related->merge($related_from_cat);
+
+        $images = $product->images()->get();
 
         if(!$product->text) {
             $text = $maincat->text;

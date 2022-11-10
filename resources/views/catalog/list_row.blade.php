@@ -2,12 +2,11 @@
     <div class="catalog-list__grid">
         <div class="catalog-list__column catalog-list__column--one">
             @php
-                $item_images = $item->images()->get();
+                $image = $item->images()->get();
             @endphp
             <a href="{{ $item->url }}" title="{{ $item->name }}">
-                <img class="catalog-list__picture lazy" src="/"
-                     data-src="{{ count($item_images) ? \Fanky\Admin\Models\ProductImage::UPLOAD_URL . $item_images[0]->image :
-                                                        \Fanky\Admin\Models\Catalog::UPLOAD_URL . $root->image }}"
+                <img class="catalog-list__picture" src="{{ count($image) ? $image[0]->thumb(2) : $item->getRootImage() }}"
+                     data-src="{{ count($image) ? $image[0]->thumb(2) : $item->getRootImage() }}"
                      alt="{{ $item->name }}"
                      width="112" height="61">
             </a>
@@ -18,16 +17,19 @@
         </div>
         <div class="catalog-list__column catalog-list__column--one">
             @php
-                $alias = $filters[0]->alias;
+                if(count($filters)) {
+                    $alias = $filters[0]->alias;
+                } else { $alias = null; }
             @endphp
-            {{ $item->$alias }}{{ $filters[0]->measure }}
-
+            {{ $item->$alias ?? '' }}
         </div>
         <div class="catalog-list__column catalog-list__column--one">
             @php
-                $alias = $filters[1]->alias;
+                if(count($filters)) {
+                    $alias = $filters[1]->alias;
+                } else { $alias = null; }
             @endphp
-            {{ $item->$alias }}{{ $filters[1]->measure }}
+            {{ $item->$alias ?? '' }}
         </div>
         <div class="catalog-list__column catalog-list__column--two">
             <div class="catalog-list__actions">
